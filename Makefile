@@ -1,23 +1,24 @@
 # Les modules
 MODULE := file requete table
-# Fichiers entête
+# Fichiers en-tête
 HEADERS := $(MODULE:%=%.h) 
 
-# Compilteur 
+# Compilateur
 CC  :=  gcc
 # Options de compilation
 CFLAGS :=  -ansi -Wall -Wextra -pedantic -ggdb
 
 .PHONY : all file_test compilation test memoire archive 
 
-# construction par défaut : fait construire extraire
+# Construction par défaut : fait construire extraire
 all : 
 	@echo "Disponible à la construction :"
 	@echo "file_test => petit test du module file avec un test mémoire"
 	@echo "compilation => compilation (ne doit produire ni erreur ni alerte)"
 	@echo "test => test simple sur une requete"
-	@echo "memoire -=> test les fuites mémoire (il ne doit pas y en avoir)"
+	@echo "memoire => test les fuites mémoire (il ne doit pas y en avoir)"
 	@echo "archive => produit la fichier pour le rendu"
+	@echp "clean => nettoie le répertoire"
 
 # Compilation : faire engendrer le programme
 compilation : ./extraire 
@@ -39,7 +40,7 @@ RESULTATS_DIR := Resultats
 # Répertoire où sont les résultats attendus
 RESULTATS_ATTENDUS_DIR := Resultats_Attendus
 
-# Requetes pour les tests sur extraire
+# Requêtes pour les tests sur extraire
 TEST_REQUETE_1 := a.1 b.1 a.2 b.3 de $(DONNES_DIR)/sport.table $(DONNES_DIR)/repas.table avec a.1=b.1
 TEST_REQUETE_2 := a.3 b.5 a.4 b.2 b.9 de $(DONNES_DIR)/r2-1.table $(DONNES_DIR)/r2-2.table avec a.3=b.5
 
@@ -72,3 +73,5 @@ file_test : file_test.c file.o
 archive :
 	@tar czf PASD_mini-projet.tgz Makefile *.c *.h compte-rendu.pdf
 
+clean :
+	rm *.o

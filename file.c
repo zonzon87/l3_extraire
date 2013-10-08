@@ -8,4 +8,4 @@ typedef struct file_struct {
     struct file_struct * prev;
     void * data;
     struct file_struct * next;
-}
+} file_struct;
