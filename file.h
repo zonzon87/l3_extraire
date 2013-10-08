@@ -9,6 +9,20 @@
 	file décrit une liste non un fichier !
 */
 
+typedef struct maillon_struct {
+	struct maillon_struct * prev;
+	void * data;
+	struct maillon_struct * next;
+} maillon_struct;
+
+typedef struct maillon_struct * maillon;
+
+typedef struct file_struct {
+	maillon head;
+	void (* copier) (const void * valeur, void ** lieu);
+	void (* liberer) (void ** lieu);
+} file_struct;
+
 /*	Type file
 	(caché dans le corps du module).
 */
@@ -41,7 +55,8 @@ extern int file_retirer(file, void ** lieu);
 
 /*	Dit si la file est vide.
 */
-extern int file_est_vide(const void *);
+/* extern int file_est_vide(const void *); */
+extern int file_est_vide(const file *);
 
 /*	Retourne le nombre d'éléments dans la file.
 */
@@ -55,10 +70,15 @@ extern int file_taille(file);
  *	Permet d'accéder aux éléments ajoutés après la création.
 */
 
+typedef struct file_parcours_struct {
+	file begin;
+	file end;
+} file_parcours_struct;
+
 /*	Type servant à enregistrer le parcours
 	(caché dans le corps du module).
 */
-	typedef struct file_parcours_struct * file_parcours;
+typedef struct file_parcours_struct * file_parcours;
 
 /*	Création de parcours.
 	Initialement avant le premier élément.
