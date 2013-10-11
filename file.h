@@ -19,8 +19,8 @@ typedef struct maillon_struct * maillon;
 
 typedef struct file_struct {
 	maillon head;
-	void (* copier) (const void * valeur, void ** lieu);
-	void (* liberer) (void ** lieu);
+	void (* copier)(const void * valeur, void ** lieu);
+	void (* liberer)(void ** lieu);
 } file_struct;
 
 /*	Type file
@@ -34,7 +34,7 @@ typedef struct file_struct * file;
 	- liberer : sert à détruire une valeur créée avec copier (désalloue de la mémoire le cas échéant).
 	* retourne 0 en cas de succès sinon un code d'erreur.
 */
-extern int file_creer(file * file_lieu, void (* copier) (const void * valeur, void ** lieu), void (* liberer) (void ** lieu));
+extern int file_creer(file * file_lieu, void (* copier)(const void * valeur, void ** lieu), void (* liberer)(void ** lieu));
 
 /*	Détruit la file.
 	DOIT être invoqué pour ne pas avoir de fuite mémoire.
@@ -56,7 +56,7 @@ extern int file_retirer(file, void ** lieu);
 /*	Dit si la file est vide.
 */
 /* extern int file_est_vide(const void *); */
-extern int file_est_vide(const file *);
+extern int file_est_vide(const void *);
 
 /*	Retourne le nombre d'éléments dans la file.
 */
@@ -71,8 +71,9 @@ extern int file_taille(file);
 */
 
 typedef struct file_parcours_struct {
-	file begin;
-	file end;
+	file list;
+	maillon begin;
+	maillon end;
 } file_parcours_struct;
 
 /*	Type servant à enregistrer le parcours

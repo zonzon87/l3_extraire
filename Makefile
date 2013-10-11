@@ -18,7 +18,7 @@ all :
 	@echo "test => test simple sur une requete"
 	@echo "memoire => test les fuites mémoire (il ne doit pas y en avoir)"
 	@echo "archive => produit la fichier pour le rendu"
-	@echp "clean => nettoie le répertoire"
+	@echo "clean => nettoie le répertoire"
 
 # Compilation : faire engendrer le programme
 compilation : ./extraire 
@@ -65,7 +65,7 @@ memoire : extraire
 # TESTE du modle FILE avec un TEST MÉMOIRE
 file_test : file_test.c file.o
 	@$(CC) $(CFLAGS) -o $@ file.o file_test.c 
-	@valgrind --leak-check=full ./file_test > $(RESULTATS_DIR)/file_test.output
+	@valgrind --leak-check=full --track-origins=yes --show-reachable=yes ./file_test > $(RESULTATS_DIR)/file_test.output
 	@if ! diff $(RESULTATS_DIR)/file_test.output $(RESULTATS_ATTENDUS_DIR)/file_test.output ; then echo "*** RÉSUTALT INCORRECT ***" ; false ; else echo OK ; fi
 
 

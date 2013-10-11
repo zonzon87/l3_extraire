@@ -16,11 +16,11 @@ void file_test_copier(const void * valeur, void ** lieu) {
 	* lieu = (void *) f_c;
 }
 
-
 void file_test_liberer(void ** lieu) {
 	free(* lieu);
 	* lieu = NULL;
 }
+
 
 /* Nombre de valeurs pour tester la file */
 #define VAL_MAX 1000
