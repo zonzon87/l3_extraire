@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <setjmp.h>
 
 #include "file.h"
+
 
 int file_creer(file * file_lieu, void (* copier)(const void * valeur, void ** lieu), void (* liberer)(void ** lieu)) {
 	(* file_lieu) = (file) malloc(sizeof (file_struct));
@@ -16,14 +18,15 @@ int file_detruire(file * list) {
 	void * olddata = NULL;
 
 	/* On retire tous les éléments de la file. */
-	while (file_est_vide(* list) == 0) {
+	while (file_est_vide(* list) != FILE_ERREUR_FILE_VIDE) {
 		file_retirer(* list, &olddata);
 		(* ((* list)->liberer))(&olddata);
 	}
 	/* On détruit la file. */
 	free(* list);
 	(* list) = NULL;
-
+	list = NULL;
+	
 	return 0;
 }
 
@@ -34,7 +37,7 @@ int file_ajouter(file list, const void * valeur) {
 
 	(* (list->copier))(valeur, &(m->data));
 
-	if (file_est_vide(list)) {
+	if (file_est_vide(list) == FILE_ERREUR_FILE_VIDE) {
 		list->head = m;
 		m->prev = m;
 		m->next = m;
@@ -51,7 +54,7 @@ int file_ajouter(file list, const void * valeur) {
 int file_retirer(file list, void ** lieu) {
 	maillon m = NULL;
 
-	if (file_est_vide(list) == 0) {
+	if (file_est_vide(list) != FILE_ERREUR_FILE_VIDE) {
 		(* (list->copier))(list->head->data, lieu);
 		(* (list->liberer))(&(list->head->data));
 		list->head->data = NULL;
@@ -72,14 +75,15 @@ int file_retirer(file list, void ** lieu) {
 			free(list->head);
 			list->head = m;
 		}
-	} else {
-		puts("WTF ?");
 	}
 
 	return 0;
 }
 
 int file_est_vide(const void * pointer) {
+	/*	On attend un (void *), mais la fonction s'appliquant à une file on cast 
+		ce pointeur en (file_struct *)
+	*/
 	file list = (file_struct *) pointer;
 
 	if (list->head == NULL) {

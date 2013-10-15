@@ -5,6 +5,7 @@
 
 #define FILE_ERREUR_NOT_A_FILE -1
 
+
 /*	ATTENTION CONFUSION POSSIBLE !!!
 	file décrit une liste non un fichier !
 */
@@ -55,7 +56,6 @@ extern int file_retirer(file, void ** lieu);
 
 /*	Dit si la file est vide.
 */
-/* extern int file_est_vide(const void *); */
 extern int file_est_vide(const void *);
 
 /*	Retourne le nombre d'éléments dans la file.

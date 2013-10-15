@@ -4,6 +4,7 @@
 
 #include "file.h"
 
+
 typedef struct file_test_struct {
 	float ff;
 	int ii;
