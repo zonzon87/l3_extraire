@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <setjmp.h>
 
 #include "file.h"
 
@@ -25,7 +24,6 @@ int file_detruire(file * list) {
 	/* On détruit la file. */
 	free(* list);
 	(* list) = NULL;
-	list = NULL;
 	
 	return 0;
 }
