@@ -20,6 +20,6 @@ extern void copierChamp (const void * valeur, void ** lieu);
 
 void libererChamp (void ** lieu);
 
-extern parameters analyzeArgs(int argc, char * argv[]);
+extern parameters * analyzeArgs(int argc, char * argv[]);
 
 #endif

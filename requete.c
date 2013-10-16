@@ -1,9 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <setjmp.h>
 #include <string.h>
 
 #include "requete.h"
 #include "file.h"
+
+ 
+#define TRY do { jmp_buf ex_buf; switch(setjmp(ex_buf)){ case 0: while(1) {
+#define CATCH(x) break; case x:
+#define FINALLY break; } default:
+#define ETRY } } while(0)
+#define THROW(x) longjmp(ex_buf, x)
+ 
+#define MISSING_ARGS_EXCEPTION (1)
+#define KEYWORD_EXCEPTION (2)
+#define EXTRACTED_CHAMP_EXCEPTION (3)
+#define CONDITION_EXCEPTION (4)
 
 void copierChamp (const void * valeur, void ** lieu) {
 	champ * in = (champ *) valeur;
@@ -18,38 +31,52 @@ void libererChamp (void ** lieu) {
 }
 
 parameters * analyzeArgs(int argc, char * argv[]) {
+	int argCount = 0;
 	char separatorChamp='.';
 	parameters * param = NULL;
-	int i = 0;
+	
 	champ temp;
 
 	param = (parameters *) malloc(sizeof (parameters));
-	file_creer(&(p->champsSortie), &copierChamp, &libererChamp);
+	file_creer(&(param->champsSortie), &copierChamp, &libererChamp);
 
-	if (argc < 6) {
-		printf("requête trop courte.\n");
-		exit(0);
-	}
+	TRY {
+		if (argc < 6) {
+			THROW(MISSING_ARGS_EXCEPTION);
+		}
+	} CATCH (MISSING_ARGS_EXCEPTION) {
 
-	for( i=1; argv[i][1]=='.' && (argv[i][0]=='a' || argv[i][0]=='b'); ++i ) {
-		temp.c=argv[i][0];
-		strtok(argv[i], &separatorChamp);
+	} FINALLY {
+
+	} ETRY;
+
+
+	
+
+	for(argCount=1; argv[argCount][1]=='.' && (argv[argCount][0]=='a' || argv[argCount][0]=='b'); ++argCount ) {
+		temp.c=argv[argCount][0];
+		strtok(argv[argCount], &separatorChamp);
 		temp.n=atoi(strtok(NULL, &separatorChamp));
-		file_ajouter(p->champsSortie, &temp);
+		file_ajouter(param->champsSortie, &temp);
 	}
 
-	if (strcmp(argv[i], "de")!=0) {
-		printf("echec comparaison : de en %d\n", i);
+	if (strcmp(argv[argCount], "de")!=0) {
+		printf("echec comparaison : de en %d\n", argCount);
 		exit(0);
 	}
 
-	if (strcmp(argv[i+3], "avec")!=0) { 
-		printf("echec comparaison : avec en %d\n", i+3);
+	if (strcmp(argv[argCount+3], "avec")!=0) { 
+		printf("echec comparaison : avec en %d\n", argCount+3);
 		exit(0);
 	}
+
+	/*	file_detruire();
+		free(param);
+	*/
+	
 
 	/*
-	comparaison=strtok(argv[i+4], egal);
+	comparaison=strtok(argv[argCount+4], egal);
 
 	comparaison1=comparaison;
 	table1=strtok(comparaison1, separatorChamp);
