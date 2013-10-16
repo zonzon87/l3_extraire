@@ -4,16 +4,16 @@
 #include "file.h"
 
 typedef struct champ {
-	char c;
-	int n;
+	int table;
+	int row;
 } champ;
 
-typedef struct parameters {
+typedef struct requete {
 	file champsSortie;
-	file nomFichiers;
+	file nomsTables;
 	champ * champ1;
 	champ * champ2;
-} parameters;
+} requete;
 
 extern void copierChamp(const void * valeur, void ** lieu);
 
@@ -21,8 +21,8 @@ extern void copierCharEtoile(const void * valeur, void ** lieu);
 
 extern void liberer(void ** lieu);
 
-extern parameters * analyzeArgs(int argc, char * argv[]);
+extern requete * analyzeArgs(int argc, const char * argv[]);
 
-extern int destroyRequete(parameters **);
+extern int destroyRequete(requete **);
 
 #endif

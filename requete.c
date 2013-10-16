@@ -14,14 +14,14 @@
 
 #define MISSING_ARGS_EXCEPTION 1
 #define KEYWORD_EXCEPTION 2
-#define EXTRACTED_CHAMP_EXCEPTION 3
+#define SYNTAX_CHAMP_EXCEPTION 3
 #define CONDITION_EXCEPTION 4
 
 void copierChamp(const void * valeur, void ** lieu) {
 	champ * in = (champ *) valeur;
 	(* lieu) = (champ *) malloc(sizeof (champ));
-	((champ *)(* lieu))->c = in->c;
-	((champ *)(* lieu))->c = in->n;
+	((champ *)(* lieu))->table = in->table;
+	((champ *)(* lieu))->row = in->row;
 }
 
 void copierCharEtoile(const void * valeur, void ** lieu) {
@@ -34,21 +34,65 @@ void liberer(void ** lieu) {
 	(* lieu) = NULL;
 }
 
-parameters * analyzeArgs(int argc, char * argv[]) {
+int parseSyntaxChamp(const char * separatorChamp, const char * c, int * fileNumber, int * rowNumber) {
+	int j;
+	int length;
+	int separatorChampPosition = -1;
+
+	length = (int) strlen(c);
+	for (j = 0; j < length; j++) {
+		if (strcmp(c, separatorChamp) == 0) {
+			if (separatorChampPosition < 0) {
+				separatorChampPosition = j;
+			} else {
+				return SYNTAX_CHAMP_EXCEPTION;
+			}
+		}
+	}
+	if (!((separatorChampPosition > 0) && (separatorChampPosition < (length - 1)))) {
+		return SYNTAX_CHAMP_EXCEPTION;
+	}
+
+	{
+		int tokenLength;
+		char * token;
+
+		tokenLength = separatorChampPosition;
+		token = (char *) malloc((sizeof (char)) * (tokenLength + 1));
+		memcpy(token, c, (sizeof (char)) * tokenLength);
+		token[tokenLength] = '\0';
+		for (j = 0; j < tokenLength; j++) {
+
+		}
+		free(token);
+
+		tokenLength = length - (separatorChampPosition + 1);
+		token = (char *) malloc((sizeof (char)) * (tokenLength + 1));
+		memcpy(token, c, (sizeof (char)) * tokenLength);
+		token[tokenLength] = '\0';
+		for (j = 0; j < tokenLength; j++) {
+
+		}
+		free(token);
+	}
+
+	return 0;
+}
+
+requete * analyzeArgs(int argc, const char * argv[]) {
 	/* rappel: argv[0] = #commande d'appel# */
 	const char of[] = "de";
 	const char with[] = "avec";
+	const char separatorChamp='.';
 
 	int argCount = 0;
 	int ofPosition = -1;
 	int withPosition = -1;
-	char separatorChamp='.';
-	parameters * param = NULL;
-	
-	champ temp;
+	requete * req = NULL;
 
-	param = (parameters *) malloc(sizeof (parameters));
-	file_creer(&(param->champsSortie), &copierChamp, &liberer);
+	req = (requete *) malloc(sizeof (requete));
+	file_creer(&(req->champsSortie), &copierChamp, &liberer);
+	file_creer(&(req->nomsTables), &copierCharEtoile, &liberer);
 
 	TRY {
 		/* Test du nombre d'arguments. */
@@ -78,7 +122,7 @@ parameters * analyzeArgs(int argc, char * argv[]) {
 		if 	( /* Test final */
 			!(
 				((ofPosition > 1) && /* Au minimum un champ à extraire. */
-				(withPosition < argc)) /* Au minimum une condition. */
+				(withPosition < argc - 1)) /* Au minimum une condition. */
 			&&
 				(withPosition - ofPosition >= 2) /* Au minimum deux fichiers entre les mots-clés. */
 			)
@@ -91,45 +135,49 @@ parameters * analyzeArgs(int argc, char * argv[]) {
 		/* Vérification et ajout des champs. */
 		{
 			int i;
-			for (i = 1; i < ofPosition; i++) {
+			int fileNumber;
+			int rowNumber;
+			int pSCResult;
+			champ * tempChamp = NULL;
 
+			tempChamp = (champ *) malloc(sizeof (champ));
+
+			for (i = 1; i < ofPosition; i++) {
+				pSCResult = parseSyntaxChamp(&separatorChamp, argv[i], &fileNumber, &rowNumber);
+				if (pSCResult == 0) {
+					tempChamp->table = fileNumber;
+					tempChamp->row = rowNumber;
+					file_ajouter(req->champsSortie, tempChamp);
+				} else {
+					THROW(pSCResult);
+				}
 			}
+
+			free(tempChamp);
 		}
 
 		/* Enregistrement des chemins des fichiers */
 		{
 			int i;
 			for (i = ofPosition + 1; i < withPosition; i++) {
-
+				file_ajouter(req->nomsTables, argv[i]);
 			}
-		}
-
-
-		for (argCount=1; argv[argCount][1]=='.' && (argv[argCount][0]=='a' || argv[argCount][0]=='b'); ++argCount ) {
-			temp.c=argv[argCount][0];
-			strtok(argv[argCount], &separatorChamp);
-			temp.n=atoi(strtok(NULL, &separatorChamp));
-			file_ajouter(param->champsSortie, &temp);
 		}
 
 	} CATCH (MISSING_ARGS_EXCEPTION) {
 
-	} FINALLY {
+	} CATCH (KEYWORD_EXCEPTION) {
 
+	} CATCH (SYNTAX_CHAMP_EXCEPTION) {
+
+	} CATCH (CONDITION_EXCEPTION) {
+
+	} FINALLY {
+		/* On clean tout si une exception a été levée. */
 	} ETRY;
 
-	if (strcmp(argv[argCount], "de")!=0) {
-		printf("echec comparaison : de en %d\n", argCount);
-		exit(0);
-	}
-
-	if (strcmp(argv[argCount+3], "avec")!=0) { 
-		printf("echec comparaison : avec en %d\n", argCount+3);
-		exit(0);
-	}
-
 	/*	file_detruire();
-		free(param);
+		free(req);
 	*/
 	
 
@@ -153,6 +201,6 @@ parameters * analyzeArgs(int argc, char * argv[]) {
 
 }
 
-int destroyRequete(parameters ** param) {
+int destroyRequete(requete ** req) {
 	return 0;
 }
