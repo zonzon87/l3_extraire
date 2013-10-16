@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "requete.h"
 
 int main(int argc, char * argv[]) {
 	int i = 0;
@@ -6,5 +9,6 @@ int main(int argc, char * argv[]) {
 		printf("Nombre d'arguments : %d.\n", argc);
 		printf("%s\n", argv[i]);
 	}
+
     return 0;
 }

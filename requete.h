@@ -10,16 +10,19 @@ typedef struct champ {
 
 typedef struct parameters {
 	file champsSortie;
-	char * fichier1;
-	char * fichier2;
+	file nomFichiers;
 	champ * champ1;
 	champ * champ2;
 } parameters;
 
-extern void copierChamp (const void * valeur, void ** lieu);
+extern void copierChamp(const void * valeur, void ** lieu);
 
-extern void libererChamp (void ** lieu);
+extern void copierCharEtoile(const void * valeur, void ** lieu);
+
+extern void liberer(void ** lieu);
 
 extern parameters * analyzeArgs(int argc, char * argv[]);
+
+extern int destroyRequete(parameters **);
 
 #endif

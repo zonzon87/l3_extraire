@@ -12,19 +12,24 @@
 #define ETRY } } while(0)
 #define THROW(x) longjmp(ex_buf, x)
 
-#define MISSING_ARGS_EXCEPTION (1)
-#define KEYWORD_EXCEPTION (2)
-#define EXTRACTED_CHAMP_EXCEPTION (3)
-#define CONDITION_EXCEPTION (4)
+#define MISSING_ARGS_EXCEPTION 1
+#define KEYWORD_EXCEPTION 2
+#define EXTRACTED_CHAMP_EXCEPTION 3
+#define CONDITION_EXCEPTION 4
 
-void copierChamp (const void * valeur, void ** lieu) {
+void copierChamp(const void * valeur, void ** lieu) {
 	champ * in = (champ *) valeur;
 	(* lieu) = (champ *) malloc(sizeof (champ));
 	((champ *)(* lieu))->c = in->c;
 	((champ *)(* lieu))->c = in->n;
 }
 
-void libererChamp (void ** lieu) {
+void copierCharEtoile(const void * valeur, void ** lieu) {
+	(* lieu) = (char *) malloc(sizeof ((char *) valeur));
+	memcpy((* lieu), valeur, sizeof ((char *) valeur));
+}
+
+void liberer(void ** lieu) {
 	free(* lieu);
 	(* lieu) = NULL;
 }
@@ -43,7 +48,7 @@ parameters * analyzeArgs(int argc, char * argv[]) {
 	champ temp;
 
 	param = (parameters *) malloc(sizeof (parameters));
-	file_creer(&(param->champsSortie), &copierChamp, &libererChamp);
+	file_creer(&(param->champsSortie), &copierChamp, &liberer);
 
 	TRY {
 		/* Test du nombre d'arguments. */
@@ -83,7 +88,7 @@ parameters * analyzeArgs(int argc, char * argv[]) {
 		} /* else { Tout va bien } */
 
 
-		/* Vérification des champs. */
+		/* Vérification et ajout des champs. */
 		{
 			int i;
 			for (i = 1; i < ofPosition; i++) {
@@ -95,7 +100,7 @@ parameters * analyzeArgs(int argc, char * argv[]) {
 		{
 			int i;
 			for (i = ofPosition + 1; i < withPosition; i++) {
-				
+
 			}
 		}
 
@@ -146,4 +151,8 @@ parameters * analyzeArgs(int argc, char * argv[]) {
 
 	return NULL;
 
+}
+
+int destroyRequete(parameters ** param) {
+	return 0;
 }
