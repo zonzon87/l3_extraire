@@ -30,7 +30,7 @@ compilation : ./extraire
 
 # Compilation de l'exécutable extraire
 ./extraire : $(MODULE:%=%.o) $(HEADERS) extraire.c 
-	$(CC) $(CFLAGS) -o $@  $(MODULE:%=%.o) extraire.c 
+	$(CC) $(CFLAGS) -lm -o $@  $(MODULE:%=%.o) extraire.c 
 
 # Répertoire de données pour les tests
 DONNES_DIR := Donnees

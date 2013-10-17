@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <setjmp.h>
 #include <string.h>
 
@@ -54,25 +55,37 @@ int parseSyntaxChamp(const char * separatorChamp, const char * c, int * fileNumb
 	}
 
 	{
+		int temp;
 		int tokenLength;
 		char * token;
 
+		(* fileNumber) = 0;
+		(* rowNumber) = 0;
 		tokenLength = separatorChampPosition;
 		token = (char *) malloc((sizeof (char)) * (tokenLength + 1));
 		memcpy(token, c, (sizeof (char)) * tokenLength);
 		token[tokenLength] = '\0';
-		for (j = 0; j < tokenLength; j++) {
 
+		for (j = 0; j < tokenLength; j++) {
+			temp = (int) token[j];
+			if ((temp >= 97) && (temp <= 122)) { /* Si le caractère est compris entre 'a' et 'z' inclus. */
+				(* fileNumber) += (temp - 96) * pow(26, (tokenLength - j - 1));
+			} else {
+				return SYNTAX_CHAMP_EXCEPTION;
+			}
 		}
+
+		(* fileNumber)--;
+
 		free(token);
 
 		tokenLength = length - (separatorChampPosition + 1);
 		token = (char *) malloc((sizeof (char)) * (tokenLength + 1));
 		memcpy(token, c, (sizeof (char)) * tokenLength);
 		token[tokenLength] = '\0';
-		for (j = 0; j < tokenLength; j++) {
 
-		}
+		(* rowNumber) = atoi(token);
+
 		free(token);
 	}
 
