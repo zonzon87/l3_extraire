@@ -7,17 +7,6 @@
 #include "requete.h"
 #include "file.h"
 
-#define TRY do { jmp_buf ex_buf; switch(setjmp(ex_buf)){ case 0: while(1) {
-#define CATCH(x) break; case x:
-#define FINALLY break; } default:
-#define ETRY } } while(0)
-#define THROW(x) longjmp(ex_buf, x)
-
-#define MISSING_ARGS_EXCEPTION 1
-#define KEYWORD_EXCEPTION 2
-#define SYNTAX_CHAMP_EXCEPTION 3
-#define CONDITION_EXCEPTION 4
-
 void copierChamp(const void * valeur, void ** lieu) {
 	champ * in = (champ *) valeur;
 	(* lieu) = (champ *) malloc(sizeof (champ));
@@ -35,58 +24,92 @@ void liberer(void ** lieu) {
 	(* lieu) = NULL;
 }
 
-int parseSyntaxChamp(const char * separatorChamp, const char * c, int * fileNumber, int * rowNumber) {
-	int j;
+int base26to10(int * result, const char * str, const int strLength) {
+	int i;
+	int temp;
+
+	for (i = 0; i < strLength; i++) {
+		temp = (int) str[i];
+		if ((temp > 96) && (temp < 123)) { /* Si le caractère est compris entre 'a' et 'z' inclus. */
+			(* result) += (temp - 96) * pow(26, (strLength - i - 1));
+		} else {
+			return 1;
+		}
+	}
+	(* result)--;
+
+	return 0;
+}
+
+int isNumeric(const char * str, const int strLength) {
+	int i;
+	int temp;
+
+	for (i = 0; i < strLength; i++) {
+		temp = (int) str[i];
+		if ((temp < 48) || (temp > 57)) { /* Si le caractère n'est pas compris entre '0' et '9' inclus, bref : n'est pas un chiffre. */
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+int parseSyntaxChamp(const char separatorChamp, const char * c, int * fileNumber, int * rowNumber) {
+	int a;
 	int length;
 	int separatorChampPosition = -1;
 
 	length = (int) strlen(c);
-	for (j = 0; j < length; j++) {
-		if (strcmp(c, separatorChamp) == 0) {
+	for (a = 0; a < length; a++) {
+		if (c[a] == separatorChamp) {
 			if (separatorChampPosition < 0) {
-				separatorChampPosition = j;
+				separatorChampPosition = a;
 			} else {
 				return SYNTAX_CHAMP_EXCEPTION;
 			}
 		}
 	}
+
 	if (!((separatorChampPosition > 0) && (separatorChampPosition < (length - 1)))) {
 		return SYNTAX_CHAMP_EXCEPTION;
 	}
 
 	{
-		int temp;
 		int tokenLength;
-		char * token;
+		char * token = NULL;
 
 		(* fileNumber) = 0;
 		(* rowNumber) = 0;
+
+		/* To comment */
 		tokenLength = separatorChampPosition;
 		token = (char *) malloc((sizeof (char)) * (tokenLength + 1));
 		memcpy(token, c, (sizeof (char)) * tokenLength);
 		token[tokenLength] = '\0';
 
-		for (j = 0; j < tokenLength; j++) {
-			temp = (int) token[j];
-			if ((temp >= 97) && (temp <= 122)) { /* Si le caractère est compris entre 'a' et 'z' inclus. */
-				(* fileNumber) += (temp - 96) * pow(26, (tokenLength - j - 1));
-			} else {
-				return SYNTAX_CHAMP_EXCEPTION;
-			}
+		a = base26to10(fileNumber, token, tokenLength);
+		free(token);
+
+		if (a != 0) {
+			return SYNTAX_CHAMP_EXCEPTION;
 		}
 
-		(* fileNumber)--;
-
-		free(token);
-
+		/* To comment */
 		tokenLength = length - (separatorChampPosition + 1);
 		token = (char *) malloc((sizeof (char)) * (tokenLength + 1));
-		memcpy(token, c, (sizeof (char)) * tokenLength);
+		memcpy(token, c + separatorChampPosition + 1, (sizeof (char)) * tokenLength);
 		token[tokenLength] = '\0';
 
+		a = isNumeric(token, tokenLength);
 		(* rowNumber) = atoi(token);
-
 		free(token);
+
+		if ((a != 0) || ((* rowNumber) < 1)) {
+			return SYNTAX_CHAMP_EXCEPTION;
+		} else {
+			(* rowNumber)--;
+		}
 	}
 
 	return 0;
@@ -98,7 +121,6 @@ requete * analyzeArgs(int argc, const char * argv[]) {
 	const char with[] = "avec";
 	const char separatorChamp='.';
 
-	int argCount = 0;
 	int ofPosition = -1;
 	int withPosition = -1;
 	requete * req = NULL;
@@ -114,35 +136,38 @@ requete * analyzeArgs(int argc, const char * argv[]) {
 		}
 
 		/* Vérification des mots-clés. */
-		argCount = 1;
-		while (argCount < argc) {
-			if (strcmp(argv[argCount], of) == 0) { /* On cherche un unique mot clé "de". */
-				if (ofPosition < 0) {
-					ofPosition = argCount;
-				} else {
-					THROW(KEYWORD_EXCEPTION);
-				}
-			}
-			if (strcmp(argv[argCount], with) == 0) { /* On cherche un unique mot clé "avec". */
-				if (withPosition < 0) {
-					withPosition = argCount;
-				} else {
-					THROW(KEYWORD_EXCEPTION);
-				}
-			}
-			argCount++;
-		}
-		if 	( /* Test final */
-			!(
-				((ofPosition > 1) && /* Au minimum un champ à extraire. */
-				(withPosition < argc - 1)) /* Au minimum une condition. */
-			&&
-				(withPosition - ofPosition >= 2) /* Au minimum deux fichiers entre les mots-clés. */
-			)
-			)
 		{
-			THROW(KEYWORD_EXCEPTION);
-		} /* else { Tout va bien } */
+			int argCount = 1;
+
+			while (argCount < argc) {
+				if (strcmp(argv[argCount], of) == 0) { /* On cherche un unique mot clé "de". */
+					if (ofPosition < 0) {
+						ofPosition = argCount;
+					} else {
+						THROW(KEYWORD_EXCEPTION);
+					}
+				}
+				if (strcmp(argv[argCount], with) == 0) { /* On cherche un unique mot clé "avec". */
+					if (withPosition < 0) {
+						withPosition = argCount;
+					} else {
+						THROW(KEYWORD_EXCEPTION);
+					}
+				}
+				argCount++;
+			}
+			if 	( /* Test final */
+				!(
+					((ofPosition > 1) && /* Au minimum un champ à extraire. */
+					(withPosition < argc - 1)) /* Au minimum une condition. */
+				&&
+					(withPosition - ofPosition >= 2) /* Au minimum deux fichiers entre les mots-clés. */
+				)
+				)
+			{
+				THROW(KEYWORD_EXCEPTION);
+			} /* else { Tout va bien } */
+		}
 
 
 		/* Vérification et ajout des champs. */
@@ -156,12 +181,13 @@ requete * analyzeArgs(int argc, const char * argv[]) {
 			tempChamp = (champ *) malloc(sizeof (champ));
 
 			for (i = 1; i < ofPosition; i++) {
-				pSCResult = parseSyntaxChamp(&separatorChamp, argv[i], &fileNumber, &rowNumber);
+				pSCResult = parseSyntaxChamp(separatorChamp, argv[i], &fileNumber, &rowNumber);
 				if (pSCResult == 0) {
 					tempChamp->table = fileNumber;
 					tempChamp->row = rowNumber;
 					file_ajouter(req->champsSortie, tempChamp);
 				} else {
+					free(tempChamp);
 					THROW(pSCResult);
 				}
 			}
@@ -172,6 +198,7 @@ requete * analyzeArgs(int argc, const char * argv[]) {
 		/* Enregistrement des chemins des fichiers */
 		{
 			int i;
+			
 			for (i = ofPosition + 1; i < withPosition; i++) {
 				file_ajouter(req->nomsTables, argv[i]);
 			}

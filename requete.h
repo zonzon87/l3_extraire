@@ -3,6 +3,17 @@
 
 #include "file.h"
 
+#define TRY do { jmp_buf ex_buf; switch(setjmp(ex_buf)){ case 0: while(1) {
+#define CATCH(x) break; case x:
+#define FINALLY break; } default:
+#define ETRY } } while(0)
+#define THROW(x) longjmp(ex_buf, x)
+
+#define MISSING_ARGS_EXCEPTION 1
+#define KEYWORD_EXCEPTION 2
+#define SYNTAX_CHAMP_EXCEPTION 3
+#define CONDITION_EXCEPTION 4
+
 typedef struct champ {
 	int table;
 	int row;
@@ -21,7 +32,11 @@ extern void copierCharEtoile(const void * valeur, void ** lieu);
 
 extern void liberer(void ** lieu);
 
-extern int parseSyntaxChamp(const char * separatorChamp, const char * c, int * fileNumber, int * rowNumber);
+extern int base26to10(int * result, const char * str, const int strLength);
+
+extern int isNumeric(const char * str, const int strLength);
+
+extern int parseSyntaxChamp(const char separatorChamp, const char * c, int * fileNumber, int * rowNumber);
 
 extern requete * analyzeArgs(int argc, const char * argv[]);
 
