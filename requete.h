@@ -12,18 +12,24 @@
 #define MISSING_ARGS_EXCEPTION 1
 #define KEYWORD_EXCEPTION 2
 #define SYNTAX_CHAMP_EXCEPTION 3
-#define CONDITION_EXCEPTION 4
+#define SYNTAX_CONDITION_EXCEPTION 4
+#define CONDITION_EXCEPTION 5
 
 typedef struct champ {
 	int table;
 	int row;
 } champ;
 
+typedef struct condition {
+	champ * champ1;
+	char * comparisonOperator;
+	champ * champ2;
+} condition;
+
 typedef struct requete {
 	file champsSortie;
 	file nomsTables;
-	champ * champ1;
-	champ * champ2;
+	file conditions;
 } requete;
 
 extern void copierChamp(const void * valeur, void ** lieu);

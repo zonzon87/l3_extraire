@@ -170,7 +170,7 @@ requete * analyzeArgs(int argc, const char * argv[]) {
 		}
 
 
-		/* Vérification et ajout des champs. */
+		/* Vérification et ajout des champs à extraire. */
 		{
 			int i;
 			int fileNumber;
@@ -195,13 +195,18 @@ requete * analyzeArgs(int argc, const char * argv[]) {
 			free(tempChamp);
 		}
 
-		/* Enregistrement des chemins des fichiers */
+		/* Enregistrement des chemins des fichiers. */
 		{
 			int i;
-			
+
 			for (i = ofPosition + 1; i < withPosition; i++) {
 				file_ajouter(req->nomsTables, argv[i]);
 			}
+		}
+
+		/* Vérification et ajout des conditions d'extraction. */
+		{
+
 		}
 
 	} CATCH (MISSING_ARGS_EXCEPTION) {
@@ -210,37 +215,25 @@ requete * analyzeArgs(int argc, const char * argv[]) {
 
 	} CATCH (SYNTAX_CHAMP_EXCEPTION) {
 
+	} CATCH (SYNTAX_CONDITION_EXCEPTION) {
+
 	} CATCH (CONDITION_EXCEPTION) {
 
 	} FINALLY {
 		/* On clean tout si une exception a été levée. */
+		if (0) {
+			destroyRequete(&req);
+		}
 	} ETRY;
 
-	/*	file_detruire();
-		free(req);
-	*/
-	
-
-	/*
-	comparaison=strtok(argv[argCount+4], egal);
-
-	comparaison1=comparaison;
-	table1=strtok(comparaison1, separatorChamp);
-	comparaison1=strtok(NULL, separatorChamp);
-	chercher_noeud (ma_jointure, table1[0], atoi(strtok(comparaison1, separatorChamp)));	
-
-	comparaison=strtok(NULL, egal);
-
-	comparaison2=comparaison;
-	table2=strtok(comparaison2, separatorChamp);
-	comparaison2=strtok(NULL, separatorChamp);
-	chercher_noeud (ma_jointure, table2[0], atoi(strtok(comparaison2, separatorChamp)));
-	*/
-
 	return NULL;
-
 }
 
 int destroyRequete(requete ** req) {
+	file_detruire(&((* req)->champsSortie));
+	file_detruire(&((* req)->nomsTables));
+	free(* req);
+	(* req) = NULL;
+
 	return 0;
 }
