@@ -36,16 +36,24 @@ extern void copierChamp(const void * valeur, void ** lieu);
 
 extern void copierCharEtoile(const void * valeur, void ** lieu);
 
-extern void liberer(void ** lieu);
+extern void libererSimple(void ** lieu);
+
+extern void copierCondition(const void * valeur, void ** lieu);
+
+extern void libererCondition(void ** lieu);
+
+extern int destroyRequete(requete **);
 
 extern int base26to10(int * result, const char * str, const int strLength);
 
 extern int isNumeric(const char * str, const int strLength);
 
-extern int parseSyntaxChamp(const char separatorChamp, const char * c, int * fileNumber, int * rowNumber);
+extern int isInVAList(char c, int argc, ...);
+
+extern int parseSyntaxChamp(const char separatorChamp, const char * c, champ ** ch);
+
+extern int parseSyntaxCondition(const char separatorChamp, const char * c, condition ** co);
 
 extern requete * analyzeArgs(int argc, const char * argv[]);
-
-extern int destroyRequete(requete **);
 
 #endif
