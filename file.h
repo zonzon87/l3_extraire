@@ -29,7 +29,7 @@ typedef struct file_struct {
 */
 typedef struct file_struct * file;
 
-/* Création d'une file générique.
+/*	Création d'une file générique.
 	- file_lieu : l'emplacement de la file à créer
 	- copier : sert à copier une valeur (de type inconnu, utilisation de void * pour cela, alloue de la mémoire si nécessaire)
 	- liberer : sert à détruire une valeur créée avec copier (désalloue de la mémoire le cas échéant).

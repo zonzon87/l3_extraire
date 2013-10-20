@@ -34,6 +34,8 @@ typedef struct requete {
 
 extern void copierChamp(const void * valeur, void ** lieu);
 
+extern int comparerChamp(const champ * ch1, const champ * ch2);
+
 extern void copierCondition(const void * valeur, void ** lieu);
 
 extern void libererCondition(void ** lieu);

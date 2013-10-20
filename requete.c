@@ -15,6 +15,21 @@ void copierChamp(const void * valeur, void ** lieu) {
 	((champ *) (* lieu))->row = ch->row;
 }
 
+int comparerChamp(const champ * ch1, const champ * ch2) {
+	if (ch1->table > ch2->table) {
+		return 1;
+	} else if (ch1->table < ch2->table) {
+		return -1;
+	}
+	if (ch1->row > ch2->row) {
+		return 2;
+	} else if (ch1->row < ch2->row) {
+		return -2;
+	}
+
+	return 0;
+}
+
 void copierCondition(const void * valeur, void ** lieu) {
 	condition * co = (condition *) valeur;
 	(* lieu) = (condition *) malloc(sizeof (condition));
@@ -220,26 +235,31 @@ int parseSyntaxCondition(condition ** co, const char separatorChamp, const char 
 	return 0;
 }
 
+#define S_OF "de"
+#define S_WITH "avec"
+#define S_ORDER "ordre"
+#define	S_SINGLE "[unique]"
+#define C_ORDER 'o'
+#define C_SINGLE 'u'
+#define C_NO_OPTION ' '
 requete * analyzeArgs(const int argc, const char * argv[]) {
 	/* rappel: argv[0] = #commande d'appel# */
-	const char of[] = "de";
-	const char with[] = "avec";
-	const char order[] = "ordre";
-	const char single[] = "[unique]";
 	const char separatorChamp = '.';
 
 	int i;
 	int ofPosition = -1;
 	int withPosition = -1;
 	int optionPosition = -1;
+	int maxNbTableAccess = -1;
+	int coherentSort = 0; /* 0 incohérent ou 1 cohérent */
 	requete * req = NULL;
-	int catched = 0;
+	int catched = 0; /* Si une exception est "catched". */
 
 	req = (requete *) malloc(sizeof (requete));
 	file_creer(&(req->champsSortie), &copierChamp, &libererSimple);
 	file_creer(&(req->nomsTables), &copierCharEtoile, &libererSimple);
 	file_creer(&(req->conditions), &copierCondition, &libererCondition);
-	req->option = ' ';
+	req->option = C_NO_OPTION;
 	req->champOrdre = NULL;
 
 	TRY {
@@ -253,7 +273,7 @@ requete * analyzeArgs(const int argc, const char * argv[]) {
 			i = 1;
 			while (i < argc) {
 				/* On cherche un unique mot clé "de". */
-				if (strcmp(argv[i], of) == 0) {
+				if (strcmp(argv[i], S_OF) == 0) {
 					if (ofPosition < 0) {
 						ofPosition = i;
 					} else {
@@ -261,44 +281,46 @@ requete * analyzeArgs(const int argc, const char * argv[]) {
 					}
 				}
 				/* On cherche un unique mot clé "avec". */
-				if (strcmp(argv[i], with) == 0) {
+				if (strcmp(argv[i], S_WITH) == 0) {
 					if (withPosition < 0) {
 						withPosition = i;
 					} else {
 						THROW(KEYWORD_EXCEPTION);
 					}
 				}
-				/* On cherche une unique option : "ordre" ou "[unique]". */
-				if (strcmp(argv[i], order) == 0) { /* "ordre" */
+				/* On cherche une unique option (facultative) :
+					"ordre" ou "[unique]".
+				*/
+				if (strcmp(argv[i], S_ORDER) == 0) { /* "ordre" */
 					if(optionPosition < 0) {
 						optionPosition = i;
-						req->option = 'o';
+						req->option = C_ORDER;
 					} else {
 						THROW(KEYWORD_EXCEPTION);
 					}
 				}
-				if (strcmp(argv[i], single) == 0) { /* "[unique]" */
+				if (strcmp(argv[i], S_SINGLE) == 0) { /* "[unique]" */
 					if (optionPosition < 0) {
 						optionPosition = i;
-						req->option = 'u';
+						req->option = C_SINGLE;
 					} else {
 						THROW(KEYWORD_EXCEPTION);
 					}
 				}
 				i++;
 			}
-			if (optionPosition < 0) {
+			if (optionPosition < 0) { /* Si aucune option n'a été trouvée. */
 				optionPosition = argc;
 			}
 			if 	( /* Test final */
 				!( /* !( */
 					((ofPosition > 1) && /* Au minimum un champ à extraire. ET */
 					(withPosition < optionPosition - 1) && /* Au minimum une condition. ET ( */
-					(((req->option == 'o') && (ofPosition = argc - 2)) /* Si "ordre" un champ de tri. */
+					(((req->option == C_ORDER) && (ofPosition = argc - 2)) /* Si "ordre" un champ de tri. */
 					||	/* OU */
-					((req->option == 'u') && (ofPosition = argc - 1)) /* Si "unique" dernier argument. */
+					((req->option == C_SINGLE) && (ofPosition = argc - 1)) /* Si "unique" dernier argument. */
 					|| /* OU */
-					(req->option == ' '))) && /* Si aucune option, rien à tester. ) ET */
+					(req->option == C_NO_OPTION))) && /* Si aucune option, rien à tester. ) ET */
 					(withPosition - ofPosition >= 2) /* Au minimum deux fichiers entre les mots-clés. */
 				) /* ) */
 				)
@@ -307,22 +329,43 @@ requete * analyzeArgs(const int argc, const char * argv[]) {
 			} /* else { Tout va bien } */
 		}
 
-		/* Vérification syntaxique et ajout des champs à extraire. */
+		/* Vérification syntaxique et ajout des champs à extraire. 
+			+ champ de tri (si nécessaire).
+		*/
 		{
 			int pSCResult;
 			champ * tempChamp = NULL;
 
-			for (i = 1; i < ofPosition; i++) {
-				pSCResult = parseSyntaxChamp(&tempChamp, separatorChamp, argv[i]);
+			if (req->option == C_ORDER) {
+				pSCResult = parseSyntaxChamp(&tempChamp, separatorChamp, argv[optionPosition + 1]);
 				if (pSCResult == 0) {
-					file_ajouter(req->champsSortie, tempChamp);
+					req->champOrdre = tempChamp;
+					if (tempChamp->table > maxNbTableAccess) {
+						maxNbTableAccess = tempChamp->table;
+					}
 				} else {
-					libererSimple((void **) &tempChamp);
 					THROW(pSCResult);
 				}
 			}
-
-			libererSimple((void **) &tempChamp);
+			tempChamp = NULL;
+			for (i = 1; (i < ofPosition); i++) {
+				pSCResult = parseSyntaxChamp(&tempChamp, separatorChamp, argv[i]);
+				if (pSCResult == 0) {
+					file_ajouter(req->champsSortie, tempChamp);
+					if (tempChamp->table > maxNbTableAccess) {
+						maxNbTableAccess = tempChamp->table;
+					}
+					if ((req->option == C_ORDER) && (coherentSort == 0)) {
+						if (comparerChamp(req->champOrdre, tempChamp) == 0) {
+							coherentSort = 1;
+						}
+					}
+					libererSimple((void **) &tempChamp); /* Par sécurité. */
+				} else {
+					libererSimple((void **) &tempChamp); /* Par sécurité. */
+					THROW(pSCResult);
+				}
+			}
 		}
 
 		/* Vérification syntaxique et ajout des conditions d'extraction. */
@@ -334,8 +377,15 @@ requete * analyzeArgs(const int argc, const char * argv[]) {
 				pSCResult = parseSyntaxCondition(&tempCondition, separatorChamp, argv[i]);
 				if (pSCResult == 0) {
 					file_ajouter(req->conditions, tempCondition);
+					if (tempCondition->champ1->table > maxNbTableAccess) {
+						maxNbTableAccess = tempCondition->champ1->table;
+					}
+					if (tempCondition->champ2->table > maxNbTableAccess) {
+						maxNbTableAccess = tempCondition->champ2->table;
+					}
+					libererCondition((void **) &tempCondition); /* Par sécurité. */
 				} else {
-					libererCondition((void **) &tempCondition);
+					libererCondition((void **) &tempCondition); /* Par sécurité. */
 					THROW(pSCResult);
 				}
 			}
@@ -348,11 +398,24 @@ requete * analyzeArgs(const int argc, const char * argv[]) {
 			}
 		}
 
+		/* Vérification des cohérences :
+			- entre la première partie de chaque champ et le nombre de fichiers
+			- égalité entre le champ de tri et au moins un champ à extraire
+		*/
+		{
+			if	((maxNbTableAccess > (withPosition - ofPosition - 1)) &&
+				!coherentSort
+				)
+			{
+				THROW(INCOHERENT_REQUETE_EXCEPTION);
+			}
+		}
 	} CATCH (MISSING_ARGS_EXCEPTION) {
 		catched = 1;
 	} CATCH (KEYWORD_EXCEPTION) {
 		catched = 1;
 	} CATCH (SYNTAX_CHAMP_EXCEPTION) {
+		/* printf("%s\n", argv[i]); */
 		catched = 1;
 	} CATCH (SYNTAX_CONDITION_EXCEPTION) {
 		catched = 1;
