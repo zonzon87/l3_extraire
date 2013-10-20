@@ -9,8 +9,8 @@ void libererSimple(void ** lieu) {
 }
 
 void copierCharEtoile(const void * valeur, void ** lieu) {
-	(* lieu) = (char *) malloc(sizeof ((char *) valeur));
-	memcpy((* lieu), valeur, sizeof ((char *) valeur));
+	(* lieu) = (char *) malloc((sizeof (char)) * (strlen((char *) valeur) + 1));
+	strcpy((* lieu), valeur);
 }
 
 int isInVAList(char c, int argc, ...) {

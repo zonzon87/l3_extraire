@@ -1,4 +1,8 @@
-/* gcc -ansi -Wall -Wextra -pedantic -ggdb -lm -o requete_test file.o outils.o requete.o requete_test.c */
+/*
+	make compilation
+	gcc -ansi -Wall -Wextra -pedantic -ggdb -lm -o requete_test file.o outils.o requete.o requete_test.c
+	valgrind --leak-check=full --show-reachable=yes --track-origins=yes ./requete_test
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -117,8 +121,38 @@ int parseSyntaxCondition_test() {
 			PRINT_ERROR(i + 1);
 			returnValue = 1;
 		}
-		libererCondition((void **) &co);/* par sécurité */
+		libererCondition((void **) &co); /* Par sécurité. */
 	}
+
+	return returnValue;
+}
+
+int createRequete_test() {
+	int i = 0;
+	int returnValue = 0;
+	requete * req = NULL;
+
+	/* Les tests suivants doivent être corrects. */
+	const char * c1[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1"};
+	if ((createRequete(&req, 10, c1) != 0)) {
+		PRINT_ERROR(i + 1);
+		returnValue = 1;
+	}
+	destroyRequete(&req);
+	/* Les tests suivants doivent être incorrects. */
+
+	/*for (i = 0; i < 6; i++) {
+		if (createRequete_test(&req, )) {
+			PRINT_ERROR(i + 1);
+			returnValue = 1;
+		}
+	}
+	for (i = 6; i < 16; i++) {
+		if () {
+			PRINT_ERROR(i + 1);
+			returnValue = 1;
+		}
+	}*/
 
 	return returnValue;
 }
@@ -130,6 +164,10 @@ int main(void) {
 	}
 	printf("parseSyntaxCondition_test : \n");
 	if (parseSyntaxCondition_test() == 0) {
+		printf("\tOK !\n");
+	}
+	printf("createRequete_test : \n");
+	if (createRequete_test() == 0) {
 		printf("\tOK !\n");
 	}
 

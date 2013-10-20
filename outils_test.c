@@ -1,4 +1,8 @@
-/* gcc -ansi -Wall -Wextra -pedantic -ggdb -o outils_test outils.o outils_test.c */
+/*
+	make compilation
+	gcc -ansi -Wall -Wextra -pedantic -ggdb -o outils_test outils.o outils_test.c
+	valgrind --leak-check=full --show-reachable=yes --track-origins=yes ./outils_test
+*/
 #include <stdio.h>
 #include <string.h>
 
@@ -6,16 +10,14 @@
 
 
 int copierCharEtoile_test() {
-	char c1[] = "Bonjour";
+	char c1[] = "Bonjour, comment vas-tu ?";
 	void * c2;
 
 	copierCharEtoile(c1, &c2);
 
-	c2 = (char *) c2;
 	if (strcmp(c1, c2) != 0) {
 		return 1;
 	}
-
 	libererSimple((void **) &c2);
 
 	return 0;

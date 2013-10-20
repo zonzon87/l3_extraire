@@ -1,4 +1,4 @@
-#include <stdio.h> /* à enlever */
+#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
@@ -245,7 +245,7 @@ int parseSyntaxCondition(condition ** co, const char separatorChamp, const char 
 #define C_SINGLE 'u'
 #define C_NO_OPTION ' '
 
-int analyzeArgs(requete ** req, const int argc, const char * argv[]) {
+int createRequete(requete ** req, const int argc, const char * argv[]) {
 	/* rappel: argv[0] = #commande d'appel# */
 	const char separatorChamp = '.';
 
@@ -361,7 +361,7 @@ int analyzeArgs(requete ** req, const int argc, const char * argv[]) {
 							coherentSort = 1;
 						}
 					}
-					libererSimple((void **) &tempChamp); /* Par sécurité. */
+					libererSimple((void **) &tempChamp);
 				} else {
 					libererSimple((void **) &tempChamp); /* Par sécurité. */
 					THROW(pSCResult);
@@ -384,7 +384,7 @@ int analyzeArgs(requete ** req, const int argc, const char * argv[]) {
 					if (tempCondition->champ2->table > maxNbTableAccess) {
 						maxNbTableAccess = tempCondition->champ2->table;
 					}
-					libererCondition((void **) &tempCondition); /* Par sécurité. */
+					libererCondition((void **) &tempCondition);
 				} else {
 					libererCondition((void **) &tempCondition); /* Par sécurité. */
 					THROW(pSCResult);

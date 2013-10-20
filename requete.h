@@ -47,7 +47,7 @@ extern int parseSyntaxChamp(champ ** ch, const char separatorChamp, const char *
 
 extern int parseSyntaxCondition(condition ** co, const char separatorChamp, const char * c);
 
-extern int analyzeArgs(requete ** req, const int argc, const char * argv[]);
+extern int createRequete(requete ** req, const int argc, const char * argv[]);
 
 
 #endif
