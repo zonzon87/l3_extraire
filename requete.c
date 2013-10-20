@@ -62,6 +62,8 @@ int base26to10(int * result, const char * str, const int strLength) {
 	int i;
 	int temp;
 
+	(* result) = 0;
+
 	for (i = 0; i < strLength; i++) {
 		temp = (int) str[i];
 		if ((temp > 96) && (temp < 123)) { /* Si le caractère est compris entre 'a' et 'z' inclus. */
@@ -102,7 +104,6 @@ int parseSyntaxChamp(champ ** ch, const char separatorChamp, const char * c) {
 		int tokenLength;
 		char * token = NULL;
 
-		tableNumber = 0;
 		rowNumber = 0;
 
 		/* To comment */
@@ -235,6 +236,7 @@ int parseSyntaxCondition(condition ** co, const char separatorChamp, const char 
 	return 0;
 }
 
+
 #define S_OF "de"
 #define S_WITH "avec"
 #define S_ORDER "ordre"
@@ -242,25 +244,25 @@ int parseSyntaxCondition(condition ** co, const char separatorChamp, const char 
 #define C_ORDER 'o'
 #define C_SINGLE 'u'
 #define C_NO_OPTION ' '
-requete * analyzeArgs(const int argc, const char * argv[]) {
+
+int analyzeArgs(requete ** req, const int argc, const char * argv[]) {
 	/* rappel: argv[0] = #commande d'appel# */
 	const char separatorChamp = '.';
 
-	int i;
+	int i = 1;
 	int ofPosition = -1;
 	int withPosition = -1;
 	int optionPosition = -1;
 	int maxNbTableAccess = -1;
 	int coherentSort = 0; /* 0 incohérent ou 1 cohérent */
-	requete * req = NULL;
-	int catched = 0; /* Si une exception est "catched". */
-
-	req = (requete *) malloc(sizeof (requete));
-	file_creer(&(req->champsSortie), &copierChamp, &libererSimple);
-	file_creer(&(req->nomsTables), &copierCharEtoile, &libererSimple);
-	file_creer(&(req->conditions), &copierCondition, &libererCondition);
-	req->option = C_NO_OPTION;
-	req->champOrdre = NULL;
+	int returnValue = 0;
+	
+	(* req) = (requete *) malloc(sizeof (requete));
+	file_creer(&((* req)->champsSortie), &copierChamp, &libererSimple);
+	file_creer(&((* req)->nomsTables), &copierCharEtoile, &libererSimple);
+	file_creer(&((* req)->conditions), &copierCondition, &libererCondition);
+	(* req)->option = C_NO_OPTION;
+	(* req)->champOrdre = NULL;
 
 	TRY {
 		/* Test du nombre d'arguments. */
@@ -270,7 +272,6 @@ requete * analyzeArgs(const int argc, const char * argv[]) {
 
 		/* Vérification des mots-clés. */
 		{
-			i = 1;
 			while (i < argc) {
 				/* On cherche un unique mot clé "de". */
 				if (strcmp(argv[i], S_OF) == 0) {
@@ -294,7 +295,7 @@ requete * analyzeArgs(const int argc, const char * argv[]) {
 				if (strcmp(argv[i], S_ORDER) == 0) { /* "ordre" */
 					if(optionPosition < 0) {
 						optionPosition = i;
-						req->option = C_ORDER;
+						(* req)->option = C_ORDER;
 					} else {
 						THROW(KEYWORD_EXCEPTION);
 					}
@@ -302,7 +303,7 @@ requete * analyzeArgs(const int argc, const char * argv[]) {
 				if (strcmp(argv[i], S_SINGLE) == 0) { /* "[unique]" */
 					if (optionPosition < 0) {
 						optionPosition = i;
-						req->option = C_SINGLE;
+						(* req)->option = C_SINGLE;
 					} else {
 						THROW(KEYWORD_EXCEPTION);
 					}
@@ -316,11 +317,11 @@ requete * analyzeArgs(const int argc, const char * argv[]) {
 				!( /* !( */
 					((ofPosition > 1) && /* Au minimum un champ à extraire. ET */
 					(withPosition < optionPosition - 1) && /* Au minimum une condition. ET ( */
-					(((req->option == C_ORDER) && (ofPosition = argc - 2)) /* Si "ordre" un champ de tri. */
+					((((* req)->option == C_ORDER) && (ofPosition = argc - 2)) /* Si "ordre" un champ de tri. */
 					||	/* OU */
-					((req->option == C_SINGLE) && (ofPosition = argc - 1)) /* Si "unique" dernier argument. */
+					(((* req)->option == C_SINGLE) && (ofPosition = argc - 1)) /* Si "unique" dernier argument. */
 					|| /* OU */
-					(req->option == C_NO_OPTION))) && /* Si aucune option, rien à tester. ) ET */
+					((* req)->option == C_NO_OPTION))) && /* Si aucune option, rien à tester. ) ET */
 					(withPosition - ofPosition >= 2) /* Au minimum deux fichiers entre les mots-clés. */
 				) /* ) */
 				)
@@ -336,10 +337,10 @@ requete * analyzeArgs(const int argc, const char * argv[]) {
 			int pSCResult;
 			champ * tempChamp = NULL;
 
-			if (req->option == C_ORDER) {
+			if ((* req)->option == C_ORDER) {
 				pSCResult = parseSyntaxChamp(&tempChamp, separatorChamp, argv[optionPosition + 1]);
 				if (pSCResult == 0) {
-					req->champOrdre = tempChamp;
+					(* req)->champOrdre = tempChamp;
 					if (tempChamp->table > maxNbTableAccess) {
 						maxNbTableAccess = tempChamp->table;
 					}
@@ -351,12 +352,12 @@ requete * analyzeArgs(const int argc, const char * argv[]) {
 			for (i = 1; (i < ofPosition); i++) {
 				pSCResult = parseSyntaxChamp(&tempChamp, separatorChamp, argv[i]);
 				if (pSCResult == 0) {
-					file_ajouter(req->champsSortie, tempChamp);
+					file_ajouter((* req)->champsSortie, tempChamp);
 					if (tempChamp->table > maxNbTableAccess) {
 						maxNbTableAccess = tempChamp->table;
 					}
-					if ((req->option == C_ORDER) && (coherentSort == 0)) {
-						if (comparerChamp(req->champOrdre, tempChamp) == 0) {
+					if (((* req)->option == C_ORDER) && (coherentSort == 0)) {
+						if (comparerChamp((* req)->champOrdre, tempChamp) == 0) {
 							coherentSort = 1;
 						}
 					}
@@ -376,7 +377,7 @@ requete * analyzeArgs(const int argc, const char * argv[]) {
 			for (i = withPosition + 1; i < optionPosition; i++) {
 				pSCResult = parseSyntaxCondition(&tempCondition, separatorChamp, argv[i]);
 				if (pSCResult == 0) {
-					file_ajouter(req->conditions, tempCondition);
+					file_ajouter((* req)->conditions, tempCondition);
 					if (tempCondition->champ1->table > maxNbTableAccess) {
 						maxNbTableAccess = tempCondition->champ1->table;
 					}
@@ -394,7 +395,7 @@ requete * analyzeArgs(const int argc, const char * argv[]) {
 		/* Enregistrement des chemins des fichiers. */
 		{
 			for (i = ofPosition + 1; i < withPosition; i++) {
-				file_ajouter(req->nomsTables, argv[i]);
+				file_ajouter((* req)->nomsTables, argv[i]);
 			}
 		}
 
@@ -411,24 +412,26 @@ requete * analyzeArgs(const int argc, const char * argv[]) {
 			}
 		}
 	} CATCH (MISSING_ARGS_EXCEPTION) {
-		catched = 1;
+		returnValue = MISSING_ARGS_EXCEPTION;
+		printf("Trop peu d'arguments : (%d / 6 minimum).\n", argc - 1);
 	} CATCH (KEYWORD_EXCEPTION) {
-		catched = 1;
+		returnValue = KEYWORD_EXCEPTION;
+		printf("Erreur sur un ou plusieurs mots-clés.\n");
 	} CATCH (SYNTAX_CHAMP_EXCEPTION) {
-		/* printf("%s\n", argv[i]); */
-		catched = 1;
+		returnValue = SYNTAX_CHAMP_EXCEPTION;
+		printf("Erreur de syntaxe sur le champ (ou un des deux champs d'une condition) : %s - argv[%d]\n", argv[i], i);
 	} CATCH (SYNTAX_CONDITION_EXCEPTION) {
-		catched = 1;
-	} CATCH (CONDITION_EXCEPTION) {
-		catched = 1;
+		returnValue = SYNTAX_CONDITION_EXCEPTION;
+		printf("Erreur de syntaxe sur la condition : %s - argv[%d]\n", argv[i], i);
 	} CATCH (INCOHERENT_REQUETE_EXCEPTION) {
-		catched = 1;
+		returnValue = INCOHERENT_REQUETE_EXCEPTION;
+		printf("Incohérence parmis au moins deux champs.\n");
 	} FINALLY {
-		/* On clean tout si une exception a été levée. */
-		if (catched) {
-			destroyRequete(&req);
+		/* On nettoie tout si une exception a été levée. */
+		if (returnValue > 0) {
+			destroyRequete(req);
 		}
 	} ETRY;
 
-	return NULL;
+	return returnValue;
 }

@@ -8,8 +8,7 @@
 #define KEYWORD_EXCEPTION 2
 #define SYNTAX_CHAMP_EXCEPTION 3
 #define SYNTAX_CONDITION_EXCEPTION 4
-#define CONDITION_EXCEPTION 5
-#define INCOHERENT_REQUETE_EXCEPTION 6
+#define INCOHERENT_REQUETE_EXCEPTION 5
 
 
 typedef struct champ {
@@ -48,7 +47,7 @@ extern int parseSyntaxChamp(champ ** ch, const char separatorChamp, const char *
 
 extern int parseSyntaxCondition(condition ** co, const char separatorChamp, const char * c);
 
-extern requete * analyzeArgs(const int argc, const char * argv[]);
+extern int analyzeArgs(requete ** req, const int argc, const char * argv[]);
 
 
 #endif
