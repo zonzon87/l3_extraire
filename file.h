@@ -10,7 +10,6 @@
 */
 
 typedef struct maillon_struct {
-	struct maillon_struct * prev;
 	void * data;
 	struct maillon_struct * next;
 } maillon_struct;
@@ -19,6 +18,7 @@ typedef struct maillon_struct * maillon;
 
 typedef struct file_struct {
 	maillon head;
+	maillon tail;
 	void (* copier)(const void * valeur, void ** lieu);
 	void (* liberer)(void ** lieu);
 } file_struct;
@@ -71,8 +71,7 @@ extern int file_taille(file);
 
 typedef struct file_parcours_struct {
 	file list;
-	maillon begin;
-	maillon end;
+	maillon pointerMaillon;
 } file_parcours_struct;
 
 /*	Type servant à enregistrer le parcours

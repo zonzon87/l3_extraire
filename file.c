@@ -36,14 +36,13 @@ int file_ajouter(file list, const void * valeur) {
 	(* (list->copier))(valeur, &(m->data));
 
 	if (file_est_vide(list) == FILE_ERREUR_FILE_VIDE) {
+		m->next = NULL;
 		list->head = m;
-		m->prev = m;
-		m->next = m;
+		list->tail = m;
 	} else {
-		m->prev = list->head->prev;
-		m->next = list->head;
-		list->head->prev->next = m;
-		list->head->prev = m;
+		m->next = NULL;
+		list->tail->next = m;
+		list->tail = m;
 	}
 
 	return 0;
@@ -55,21 +54,13 @@ int file_retirer(file list, void ** lieu) {
 	if (file_est_vide(list) != FILE_ERREUR_FILE_VIDE) {
 		(* (list->copier))(list->head->data, lieu);
 		(* (list->liberer))(&(list->head->data));
-		list->head->data = NULL;
 
 		/* Si l'on retire l'unique maillon de la file. */
-		if (list->head == list->head->prev) {
+		if (list->head->next == NULL) {
 			free(list->head);
 			list->head = NULL;
 		} else {
 			m = list->head->next;
-			/* Si en retirant list->head, m reste l'unique maillon */
-			if (m->next == list->head) {
-				m->prev = m;
-				m->next = m;
-			} else {
-				m->prev = list->head->prev;
-			}
 			free(list->head);
 			list->head = m;
 		}
@@ -93,14 +84,13 @@ int file_est_vide(const void * pointer) {
 
 int file_taille(file list) {
 	int count = 0;
-	maillon begin = list->head;
-	maillon end = list->head->prev;
+	maillon m = list->head;
 
-	if (begin != NULL) {
+	if (m != NULL) {
 		count = 1;
-		while (begin != end) {
+		while (m->next != NULL) {
 			count++;
-			begin = begin->next;
+			m = m->next;
 		}
 	}
 
@@ -110,10 +100,9 @@ int file_taille(file list) {
 file_parcours file_parcours_creer(file list) {
 	file_parcours iterate = NULL;
 
-	iterate = malloc(sizeof (file_parcours_struct));
+	iterate = (file_parcours) malloc(sizeof (file_parcours_struct));
 	iterate->list = list;
-	iterate->begin = NULL;
-	iterate->end = iterate->list->head->prev;
+	iterate->pointerMaillon = iterate->list->head;
 
 	return iterate;
 }
@@ -125,19 +114,15 @@ void file_parcours_detruire(file_parcours * iterate) {
 
 void file_parcours_suivant(file_parcours iterate, void ** lieu) {
 	if (file_parcours_est_fini(iterate) == 0) {
-		if (iterate->begin == NULL) {
-			iterate->begin = iterate->list->head;
-		} else {
-			iterate->begin = iterate->begin->next;
-		}
-		(* (iterate->list->copier))(iterate->begin->data, lieu);
+		(* (iterate->list->copier))(iterate->pointerMaillon->data, lieu);
+		iterate->pointerMaillon = iterate->pointerMaillon->next;
 	} else {
 		(* lieu) = NULL;
 	}
 }
 
 int file_parcours_est_fini(file_parcours iterate) {
-	if (iterate->begin == iterate->end) {
+	if (iterate->pointerMaillon == NULL) {
 		return 1;
 	}
 
