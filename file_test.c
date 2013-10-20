@@ -57,7 +57,7 @@ void test_avec_parcours() {
 			while (!file_parcours_est_fini(parcours)) {
 				file_test_struct *pt_s;
 				file_parcours_suivant(parcours, (void **) &pt_s);
-				printf("%3i %f\n", pt_s -> ii, pt_s -> ff);
+				printf("%3i %f\n", pt_s->ii, pt_s->ff);
 				free(pt_s);
 			}
 			/* Destruction du parcours */
@@ -93,7 +93,7 @@ int main (void) {
 		file_test_struct * pt_s;
 		while (!file_est_vide(f)) {
 			file_retirer(f, (void *) &pt_s);
-			printf("%3i %f\n", pt_s -> ii, pt_s -> ff);
+			printf("%3i %f\n", pt_s->ii, pt_s->ff);
 			free(pt_s);
 		}
 	}

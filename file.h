@@ -2,7 +2,6 @@
 #define __FILE_H__
 
 #define FILE_ERREUR_FILE_VIDE 1
-
 #define FILE_ERREUR_NOT_A_FILE -1
 
 

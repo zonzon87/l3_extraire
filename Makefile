@@ -1,5 +1,5 @@
 # Les modules
-MODULE := file requete table
+MODULE := file requete table outils
 # Fichiers en-tête
 HEADERS := $(MODULE:%=%.h)
 

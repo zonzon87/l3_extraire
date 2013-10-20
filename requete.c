@@ -1,28 +1,17 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>
 #include <math.h>
-#include <setjmp.h>
 #include <string.h>
 
 #include "requete.h"
 #include "file.h"
+#include "outils.h"
+
 
 void copierChamp(const void * valeur, void ** lieu) {
 	champ * ch = (champ *) valeur;
 	(* lieu) = (champ *) malloc(sizeof (champ));
 	((champ *) (* lieu))->table = ch->table;
 	((champ *) (* lieu))->row = ch->row;
-}
-
-void copierCharEtoile(const void * valeur, void ** lieu) {
-	(* lieu) = (char *) malloc(sizeof ((char *) valeur));
-	memcpy((* lieu), valeur, sizeof ((char *) valeur));
-}
-
-void libererSimple(void ** lieu) {
-	free(* lieu);
-	(* lieu) = NULL;
 }
 
 void copierCondition(const void * valeur, void ** lieu) {
@@ -41,14 +30,11 @@ void libererCondition(void ** lieu) {
 	libererSimple(lieu);
 }
 
-int destroyRequete(requete ** req) {
+void destroyRequete(requete ** req) {
 	file_detruire(&((* req)->champsSortie));
 	file_detruire(&((* req)->nomsTables));
 	file_detruire(&((* req)->conditions));
-	free(* req);
-	(* req) = NULL;
-
-	return 0;
+	libererSimple((void **) req);
 }
 
 int base26to10(int * result, const char * str, const int strLength) {
@@ -58,7 +44,7 @@ int base26to10(int * result, const char * str, const int strLength) {
 	for (i = 0; i < strLength; i++) {
 		temp = (int) str[i];
 		if ((temp > 96) && (temp < 123)) { /* Si le caractère est compris entre 'a' et 'z' inclus. */
-			(* result) += (temp - 96) * pow(26, (strLength - i - 1));
+			(* result) += (temp - 96) * pow(26, strLength - i - 1);
 		} else {
 			return 1;
 		}
@@ -68,38 +54,7 @@ int base26to10(int * result, const char * str, const int strLength) {
 	return 0;
 }
 
-int isNumeric(const char * str, const int strLength) {
-	int i;
-	int temp;
-
-	for (i = 0; i < strLength; i++) {
-		temp = (int) str[i];
-		if ((temp < 48) || (temp > 57)) { /* Si le caractère n'est pas compris entre '0' et '9' inclus, bref : n'est pas un chiffre. */
-			return 1;
-		}
-	}
-
-	return 0;
-}
-
-int isInVAList(char c, int argc, ...) {
-	int i;
-	va_list argList;
-
-	va_start(argList, argc);
-
-	for (i = 0; i < argc; i++) {
-		if (c == (char) (va_arg(argList, int))) {
-			va_end(argList);
-			return 0;
-		}
-	}
-
-	va_end(argList);
-	return 1;
-}
-
-int parseSyntaxChamp(const char separatorChamp, const char * c, champ ** ch) {
+int parseSyntaxChamp(champ ** ch, const char separatorChamp, const char * c) {
 	int a;
 	int length;
 	int separatorChampPosition = -1;
@@ -136,7 +91,7 @@ int parseSyntaxChamp(const char separatorChamp, const char * c, champ ** ch) {
 		token[tokenLength] = '\0';
 
 		a = base26to10(&fileNumber, token, tokenLength);
-		free(token);
+		libererSimple((void **) &token);
 
 		if (a != 0) {
 			return SYNTAX_CHAMP_EXCEPTION;
@@ -150,7 +105,7 @@ int parseSyntaxChamp(const char separatorChamp, const char * c, champ ** ch) {
 
 		a = isNumeric(token, tokenLength);
 		rowNumber = atoi(token);
-		free(token);
+		libererSimple((void **) &token);
 
 		if ((a != 0) || (rowNumber < 1)) {
 			return SYNTAX_CHAMP_EXCEPTION;
@@ -166,15 +121,15 @@ int parseSyntaxChamp(const char separatorChamp, const char * c, champ ** ch) {
 	return 0;
 }
 
-int parseSyntaxCondition(const char separatorChamp, const char * c, condition ** co) {
+int parseSyntaxCondition(condition ** co, const char separatorChamp, const char * c) {
 	int a;
 	int length;
 	int separatorConditionPositionStart = -1;
 	int separatorConditionPositionEnd = -1;
 
-	champ * champ1;
-	char * comparisonOperator;
-	champ * champ2;
+	champ * champ1 = NULL;
+	char * comparisonOperator = NULL;
+	champ * champ2 = NULL;
 
 	length = (int) strlen(c);
 
@@ -182,6 +137,7 @@ int parseSyntaxCondition(const char separatorChamp, const char * c, condition **
 		char lastChar = '\0';
 		int cOTempI = 0;
 		char cOTemp[] = {'\0', '\0', '\0', '\0'};
+
 		for (a = 0; a < length; a++) {
 			if (!(separatorConditionPositionStart < 0)) {
 				if	(
@@ -218,12 +174,50 @@ int parseSyntaxCondition(const char separatorChamp, const char * c, condition **
 		comparisonOperator[cOTempI] = '\0';
 	}
 
+	{
+		int tokenLength;
+		char * token = NULL;
 
+		/* To comment */
+		tokenLength = separatorConditionPositionStart;
+		token = (char *) malloc((sizeof (char)) * (tokenLength + 1));
+		memcpy(token, c, (sizeof (char)) * tokenLength);
+		token[tokenLength] = '\0';
+
+		a = parseSyntaxChamp(&champ1, separatorChamp, token);
+		libererSimple((void **) &token);
+
+		if (a != 0) {
+			libererSimple((void **) &comparisonOperator);
+			libererSimple((void **) &champ1);
+			return a;
+		}
+
+		tokenLength = length - (separatorConditionPositionEnd + 1);
+		token = (char *) malloc((sizeof (char)) * (tokenLength + 1));
+		memcpy(token, c + separatorConditionPositionEnd + 1, (sizeof (char)) * tokenLength);
+		token[tokenLength] = '\0';
+
+		a = parseSyntaxChamp(&champ2, separatorChamp, token);
+		libererSimple((void **) &token);
+
+		if (a != 0) {
+			libererSimple((void **) &comparisonOperator);
+			libererSimple((void **) &champ1);
+			libererSimple((void **) &champ2);
+			return a;
+		}
+	}
+
+	(* co) = (condition *) malloc(sizeof (condition));
+	(* co)->champ1 = champ1;
+	(* co)->comparisonOperator = comparisonOperator;
+	(* co)->champ2 = champ2;
 
 	return 0;
 }
 
-requete * analyzeArgs(int argc, const char * argv[]) {
+requete * analyzeArgs(const int argc, const char * argv[]) {
 	/* rappel: argv[0] = #commande d'appel# */
 	const char of[] = "de";
 	const char with[] = "avec";
@@ -233,6 +227,7 @@ requete * analyzeArgs(int argc, const char * argv[]) {
 	int ofPosition = -1;
 	int withPosition = -1;
 	requete * req = NULL;
+	int catched = 0;
 
 	req = (requete *) malloc(sizeof (requete));
 	file_creer(&(req->champsSortie), &copierChamp, &libererSimple);
@@ -277,16 +272,13 @@ requete * analyzeArgs(int argc, const char * argv[]) {
 			} /* else { Tout va bien } */
 		}
 
-
 		/* Vérification syntaxique et ajout des champs à extraire. */
 		{
-			int fileNumber;
-			int rowNumber;
 			int pSCResult;
 			champ * tempChamp = NULL;
 
 			for (i = 1; i < ofPosition; i++) {
-				pSCResult = parseSyntaxChamp(separatorChamp, argv[i], &tempChamp);
+				pSCResult = parseSyntaxChamp(&tempChamp, separatorChamp, argv[i]);
 				if (pSCResult == 0) {
 					file_ajouter(req->champsSortie, tempChamp);
 				} else {
@@ -296,18 +288,21 @@ requete * analyzeArgs(int argc, const char * argv[]) {
 			}
 
 			libererSimple((void **) &tempChamp);
-
 		}
 
 		/* Vérification syntaxique et ajout des conditions d'extraction. */
 		{
-			int fileNumber;
-			champ * champ1 = NULL;
-			char * comparisonOperator = NULL;
-			champ * champ2 = NULL;
+			int pSCResult;
 			condition * tempCondition = NULL;
-			for (i = withPosition + 1; i < argc; i++) {
 
+			for (i = withPosition + 1; i < argc; i++) {
+				pSCResult = parseSyntaxCondition(&tempCondition, separatorChamp, argv[i]);
+				if (pSCResult == 0) {
+					file_ajouter(req->conditions, tempCondition);
+				} else {
+					libererCondition((void **) &tempCondition);
+					THROW(pSCResult);
+				}
 			}
 		}
 
@@ -319,18 +314,18 @@ requete * analyzeArgs(int argc, const char * argv[]) {
 		}
 
 	} CATCH (MISSING_ARGS_EXCEPTION) {
-
+		catched = 1;
 	} CATCH (KEYWORD_EXCEPTION) {
-
+		catched = 1;
 	} CATCH (SYNTAX_CHAMP_EXCEPTION) {
-
+		catched = 1;
 	} CATCH (SYNTAX_CONDITION_EXCEPTION) {
-
+		catched = 1;
 	} CATCH (CONDITION_EXCEPTION) {
-
+		catched = 1;
 	} FINALLY {
 		/* On clean tout si une exception a été levée. */
-		if (0) {
+		if (catched) {
 			destroyRequete(&req);
 		}
 	} ETRY;
