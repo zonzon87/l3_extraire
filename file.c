@@ -16,6 +16,9 @@ int file_creer(file * file_lieu, void (* copier)(const void * valeur, void ** li
 int file_detruire(file * list) {
 	void * olddata = NULL;
 
+	if (list == NULL) {
+		return FILE_ERREUR_NOT_A_FILE;
+	}
 	/* On retire tous les éléments de la file. */
 	while (file_est_vide(* list) != FILE_ERREUR_FILE_VIDE) {
 		file_retirer(* list, &olddata);
@@ -31,6 +34,9 @@ int file_detruire(file * list) {
 int file_ajouter(file list, const void * valeur) {
 	maillon m = NULL;
 
+	if (list == NULL) {
+		return FILE_ERREUR_NOT_A_FILE;
+	}
 	m = (maillon) malloc(sizeof (maillon_struct));
 
 	(* (list->copier))(valeur, &(m->data));
@@ -51,6 +57,9 @@ int file_ajouter(file list, const void * valeur) {
 int file_retirer(file list, void ** lieu) {
 	maillon m = NULL;
 
+	if (list == NULL) {
+		return FILE_ERREUR_NOT_A_FILE;
+	}
 	if (file_est_vide(list) != FILE_ERREUR_FILE_VIDE) {
 		(* (list->copier))(list->head->data, lieu);
 		(* (list->liberer))(&(list->head->data));
@@ -73,8 +82,12 @@ int file_est_vide(const void * pointer) {
 	/*	On attend un (void *), mais la fonction s'appliquant à une file on cast 
 		ce pointeur en (file_struct *)
 	*/
-	file list = (file_struct *) pointer;
+	file list = NULL;
 
+	if (pointer == NULL) {
+		return FILE_ERREUR_NOT_A_FILE;
+	}
+	list = (file_struct *) pointer;
 	if (list->head == NULL) {
 		return FILE_ERREUR_FILE_VIDE;
 	}
@@ -84,7 +97,12 @@ int file_est_vide(const void * pointer) {
 
 int file_taille(file list) {
 	int count = 0;
-	maillon m = list->head;
+	maillon m = NULL;
+
+	if (list == NULL) {
+		return FILE_ERREUR_NOT_A_FILE;
+	}
+	m = list->head;
 
 	if (m != NULL) {
 		count = 1;
@@ -100,9 +118,11 @@ int file_taille(file list) {
 file_parcours file_parcours_creer(file list) {
 	file_parcours iterate = NULL;
 
-	iterate = (file_parcours) malloc(sizeof (file_parcours_struct));
-	iterate->list = list;
-	iterate->pointerMaillon = iterate->list->head;
+	if (list != NULL) {
+		iterate = (file_parcours) malloc(sizeof (file_parcours_struct));
+		iterate->list = list;
+		iterate->pointerMaillon = iterate->list->head;
+	}
 
 	return iterate;
 }
@@ -122,6 +142,9 @@ void file_parcours_suivant(file_parcours iterate, void ** lieu) {
 }
 
 int file_parcours_est_fini(file_parcours iterate) {
+	if (iterate == NULL) {
+		return FILE_ERREUR_NOT_A_FILE_PARCOURS;
+	}
 	if (iterate->pointerMaillon == NULL) {
 		return 1;
 	}

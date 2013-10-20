@@ -27,6 +27,8 @@ typedef struct requete {
 	file champsSortie;
 	file nomsTables;
 	file conditions;
+	char option;
+	champ * champOrdre;
 } requete;
 
 

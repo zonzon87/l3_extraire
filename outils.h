@@ -10,6 +10,7 @@
 #define ETRY } } while(0)
 #define THROW(x) longjmp(ex_buf, x)
 
+#define UNINITIALIZED_VAR -1
 
 extern void libererSimple(void ** lieu);
 

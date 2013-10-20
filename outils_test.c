@@ -1,5 +1,6 @@
-/* gcc -ansi -Wall -Wextra -pedantic -ggdb -o outils_test requete.o outils_test.c */
+/* gcc -ansi -Wall -Wextra -pedantic -ggdb -o outils_test outils.o outils_test.c */
 #include <stdio.h>
+#include <string.h>
 
 #include "outils.h"
 
@@ -15,7 +16,7 @@ int copierCharEtoile_test() {
 		return 1;
 	}
 
-	free(c2);
+	libererSimple((void **) &c2);
 
 	return 0;
 }

@@ -34,10 +34,13 @@ void libererCondition(void ** lieu) {
 }
 
 void destroyRequete(requete ** req) {
-	file_detruire(&((* req)->champsSortie));
-	file_detruire(&((* req)->nomsTables));
-	file_detruire(&((* req)->conditions));
-	libererSimple((void **) req);
+	if ((* req) != NULL) {
+		file_detruire(&((* req)->champsSortie));
+		file_detruire(&((* req)->nomsTables));
+		file_detruire(&((* req)->conditions));
+		libererSimple((void **) &((* req)->champOrdre));
+		libererSimple((void **) req);
+	}
 }
 
 int base26to10(int * result, const char * str, const int strLength) {
@@ -221,11 +224,14 @@ requete * analyzeArgs(const int argc, const char * argv[]) {
 	/* rappel: argv[0] = #commande d'appel# */
 	const char of[] = "de";
 	const char with[] = "avec";
-	const char separatorChamp='.';
+	const char order[] = "ordre";
+	const char single[] = "[unique]";
+	const char separatorChamp = '.';
 
 	int i;
 	int ofPosition = -1;
 	int withPosition = -1;
+	int optionPosition = -1;
 	requete * req = NULL;
 	int catched = 0;
 
@@ -233,6 +239,8 @@ requete * analyzeArgs(const int argc, const char * argv[]) {
 	file_creer(&(req->champsSortie), &copierChamp, &libererSimple);
 	file_creer(&(req->nomsTables), &copierCharEtoile, &libererSimple);
 	file_creer(&(req->conditions), &copierCondition, &libererCondition);
+	req->option = ' ';
+	req->champOrdre = NULL;
 
 	TRY {
 		/* Test du nombre d'arguments. */
@@ -242,30 +250,57 @@ requete * analyzeArgs(const int argc, const char * argv[]) {
 
 		/* Vérification des mots-clés. */
 		{
+			i = 1;
 			while (i < argc) {
-				if (strcmp(argv[i], of) == 0) { /* On cherche un unique mot clé "de". */
+				/* On cherche un unique mot clé "de". */
+				if (strcmp(argv[i], of) == 0) {
 					if (ofPosition < 0) {
 						ofPosition = i;
 					} else {
 						THROW(KEYWORD_EXCEPTION);
 					}
 				}
-				if (strcmp(argv[i], with) == 0) { /* On cherche un unique mot clé "avec". */
+				/* On cherche un unique mot clé "avec". */
+				if (strcmp(argv[i], with) == 0) {
 					if (withPosition < 0) {
 						withPosition = i;
 					} else {
 						THROW(KEYWORD_EXCEPTION);
 					}
 				}
+				/* On cherche une unique option : "ordre" ou "[unique]". */
+				if (strcmp(argv[i], order) == 0) { /* "ordre" */
+					if(optionPosition < 0) {
+						optionPosition = i;
+						req->option = 'o';
+					} else {
+						THROW(KEYWORD_EXCEPTION);
+					}
+				}
+				if (strcmp(argv[i], single) == 0) { /* "[unique]" */
+					if (optionPosition < 0) {
+						optionPosition = i;
+						req->option = 'u';
+					} else {
+						THROW(KEYWORD_EXCEPTION);
+					}
+				}
 				i++;
 			}
+			if (optionPosition < 0) {
+				optionPosition = argc;
+			}
 			if 	( /* Test final */
-				!(
-					((ofPosition > 1) && /* Au minimum un champ à extraire. */
-					(withPosition < argc - 1)) /* Au minimum une condition. */
-				&&
+				!( /* !( */
+					((ofPosition > 1) && /* Au minimum un champ à extraire. ET */
+					(withPosition < optionPosition - 1) && /* Au minimum une condition. ET ( */
+					(((req->option == 'o') && (ofPosition = argc - 2)) /* Si "ordre" un champ de tri. */
+					||	/* OU */
+					((req->option == 'u') && (ofPosition = argc - 1)) /* Si "unique" dernier argument. */
+					|| /* OU */
+					(req->option == ' '))) && /* Si aucune option, rien à tester. ) ET */
 					(withPosition - ofPosition >= 2) /* Au minimum deux fichiers entre les mots-clés. */
-				)
+				) /* ) */
 				)
 			{
 				THROW(KEYWORD_EXCEPTION);
@@ -295,7 +330,7 @@ requete * analyzeArgs(const int argc, const char * argv[]) {
 			int pSCResult;
 			condition * tempCondition = NULL;
 
-			for (i = withPosition + 1; i < argc; i++) {
+			for (i = withPosition + 1; i < optionPosition; i++) {
 				pSCResult = parseSyntaxCondition(&tempCondition, separatorChamp, argv[i]);
 				if (pSCResult == 0) {
 					file_ajouter(req->conditions, tempCondition);
