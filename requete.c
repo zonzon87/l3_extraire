@@ -1,3 +1,4 @@
+#include <stdio.h> /* à enlever */
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
@@ -24,10 +25,12 @@ void copierCondition(const void * valeur, void ** lieu) {
 }
 
 void libererCondition(void ** lieu) {
-	libererSimple((void **) &(((condition *) (* lieu))->champ1));
-	libererSimple((void **) &(((condition *) (* lieu))->comparisonOperator));
-	libererSimple((void **) &(((condition *) (* lieu))->champ2));
-	libererSimple(lieu);
+	if ((* lieu) != NULL) {
+		libererSimple((void **) &(((condition *) (* lieu))->champ1));
+		libererSimple((void **) &(((condition *) (* lieu))->comparisonOperator));
+		libererSimple((void **) &(((condition *) (* lieu))->champ2));
+		libererSimple(lieu);
+	}
 }
 
 void destroyRequete(requete ** req) {
@@ -59,7 +62,7 @@ int parseSyntaxChamp(champ ** ch, const char separatorChamp, const char * c) {
 	int length;
 	int separatorChampPosition = -1;
 
-	int fileNumber;
+	int tableNumber;
 	int rowNumber;
 
 	length = (int) strlen(c);
@@ -81,7 +84,7 @@ int parseSyntaxChamp(champ ** ch, const char separatorChamp, const char * c) {
 		int tokenLength;
 		char * token = NULL;
 
-		fileNumber = 0;
+		tableNumber = 0;
 		rowNumber = 0;
 
 		/* To comment */
@@ -90,7 +93,7 @@ int parseSyntaxChamp(champ ** ch, const char separatorChamp, const char * c) {
 		memcpy(token, c, (sizeof (char)) * tokenLength);
 		token[tokenLength] = '\0';
 
-		a = base26to10(&fileNumber, token, tokenLength);
+		a = base26to10(&tableNumber, token, tokenLength);
 		libererSimple((void **) &token);
 
 		if (a != 0) {
@@ -115,7 +118,7 @@ int parseSyntaxChamp(champ ** ch, const char separatorChamp, const char * c) {
 	}
 	
 	(* ch) = (champ *) malloc(sizeof (champ));
-	(* ch)->table = fileNumber;
+	(* ch)->table = tableNumber;
 	(* ch)->row = rowNumber;
 
 	return 0;
@@ -132,7 +135,6 @@ int parseSyntaxCondition(condition ** co, const char separatorChamp, const char 
 	champ * champ2 = NULL;
 
 	length = (int) strlen(c);
-
 	{
 		char lastChar = '\0';
 		int cOTempI = 0;
@@ -163,12 +165,10 @@ int parseSyntaxCondition(condition ** co, const char separatorChamp, const char 
 			}
 			lastChar = c[a];
 		}
-
-		if (((separatorConditionPositionStart > 0) && (separatorConditionPositionEnd > 0)) &&
-			((separatorConditionPositionStart < (length - 1)) && (separatorConditionPositionEnd < (length - 1)))) {
+		if (!(((separatorConditionPositionStart > 0) && (separatorConditionPositionEnd > 0)) &&
+			((separatorConditionPositionStart < (length - 1)) && (separatorConditionPositionEnd < (length - 1))))) {
 			return SYNTAX_CONDITION_EXCEPTION;
 		}
-
 		comparisonOperator = (char *) malloc((sizeof (char)) * (cOTempI + 1));
 		memcpy(comparisonOperator, cOTemp, (sizeof (char)) * cOTempI);
 		comparisonOperator[cOTempI] = '\0';
@@ -322,6 +322,8 @@ requete * analyzeArgs(const int argc, const char * argv[]) {
 	} CATCH (SYNTAX_CONDITION_EXCEPTION) {
 		catched = 1;
 	} CATCH (CONDITION_EXCEPTION) {
+		catched = 1;
+	} CATCH (INCOHERENT_REQUETE_EXCEPTION) {
 		catched = 1;
 	} FINALLY {
 		/* On clean tout si une exception a été levée. */
