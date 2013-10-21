@@ -71,7 +71,7 @@ file_test : file_test.c file.o
 
 # PRODUIT l'ARCHIVE à RENDRE par MAIL
 archive :
-	@tar czf PASD_mini-projet.tgz Makefile *.c *.h compte-rendu.pdf
+	@tar czf PASD_mini-projet.tgz Makefile *.c *.h LICENSE README compte-rendu.pdf
 
 clean :
 	rm *.o

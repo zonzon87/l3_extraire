@@ -10,6 +10,14 @@
 #define SYNTAX_CONDITION_EXCEPTION 4
 #define INCOHERENT_REQUETE_EXCEPTION 5
 
+#define S_OF "de"
+#define S_WITH "avec"
+#define S_ORDER "ordre"
+#define	S_SINGLE "[unique]"
+#define C_ORDER 'o'
+#define C_SINGLE 'u'
+#define C_NO_OPTION ' '
+
 
 typedef struct champ {
 	int table;

@@ -4,6 +4,29 @@
 #include "file.h"
 
 
+#define FILE_ERREUR_NOT_A_FILE_PARCOURS -1
+
+
+typedef struct maillon_struct {
+	void * data;
+	struct maillon_struct * next;
+} maillon_struct;
+
+typedef struct maillon_struct * maillon;
+
+typedef struct file_struct {
+	maillon head;
+	maillon tail;
+	void (* copier)(const void * valeur, void ** lieu);
+	void (* liberer)(void ** lieu);
+} file_struct;
+
+typedef struct file_parcours_struct {
+	file list;
+	maillon pointerMaillon;
+} file_parcours_struct;
+
+
 int file_creer(file * file_lieu, void (* copier)(const void * valeur, void ** lieu), void (* liberer)(void ** lieu)) {
 	(* file_lieu) = (file) malloc(sizeof (file_struct));
 	(* file_lieu)->head = NULL;
@@ -78,16 +101,10 @@ int file_retirer(file list, void ** lieu) {
 	return 0;
 }
 
-int file_est_vide(const void * pointer) {
-	/*	On attend un (void *), mais la fonction s'appliquant à une file on cast 
-		ce pointeur en (file_struct *)
-	*/
-	file list = NULL;
-
-	if (pointer == NULL) {
+int file_est_vide(file list) {
+	if (list == NULL) {
 		return FILE_ERREUR_NOT_A_FILE;
 	}
-	list = (file_struct *) pointer;
 	if (list->head == NULL) {
 		return FILE_ERREUR_FILE_VIDE;
 	}
