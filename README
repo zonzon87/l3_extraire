@@ -6,4 +6,4 @@
 - pour chaque nomModule il existe nomModule_test.c : tests unitaires.
 - tout le code déjà implémenté est stable, et ne provoque aucune fuite mémoire.
 
-Alexis Lavie - Hugo Thibault
+Alexis Lavie - Hugo Thibaud
