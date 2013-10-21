@@ -128,18 +128,45 @@ int parseSyntaxCondition_test() {
 }
 
 int createRequete_test() {
-	int i = 0;
+	int i = 1;
 	int returnValue = 0;
 	requete * req = NULL;
 
 	/* Les tests suivants doivent être corrects. */
-	const char * c1[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1"};
-	if ((createRequete(&req, 10, c1) != 0)) {
-		PRINT_ERROR(i + 1);
+	const char * c1In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1"};
+	const char * c1Out[] = {"10", "4", "2", "1", " ", NULL};
+	const char * c2In[] = {"./extraire", "a.1", "b.1", "a.2", "c.2", "d.8", "b.3", "de", "sport.table", "repas.table", "jeu.table", "compte.table", "avec", "a.1=b.1"};
+	const char * c2Out[] = {"14", "6", "4" ,"1", " ", NULL};
+	const char * c3In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1", "a.3 <. b.2", "[unique]"};
+	const char * c3Out[] = {"12", "4", "2", "2", "u", NULL};
+	const char * c4In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1", "a.3 >= b.2", "ordre", "a.3"};
+	const char * c4Out[] = {"13", "4", "2", "1", "o", NULL};
+	const char * c5In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1", "a.3 >= b.2", "ordre", "a.1"};
+	const char * c5Out[] = {"13", "4", "2", "1", "o", NULL};
+
+	char ** cIn[5];
+	cIn[0] = c1In;
+	cIn[1] = c2In;
+	cIn[2] = c3In;
+	cIn[3] = c4In;
+	cIn[4] = c5In;
+	char ** cOut[5];
+
+	if	(
+		(createRequete(&req, 10, c1In) != 0) ||
+		(file_taille(req->champsSortie) != 4) ||
+		(file_taille(req->nomsTables) != 2) ||
+		(file_taille(req->conditions) != 1) ||
+		(req->option != ' ') ||
+		(req->champOrdre != NULL)
+	) {
+		PRINT_ERROR(i);
 		returnValue = 1;
 	}
 	destroyRequete(&req);
-	/* Les tests suivants doivent être incorrects. */
+
+
+	
 
 	/*for (i = 0; i < 6; i++) {
 		if (createRequete_test(&req, )) {
