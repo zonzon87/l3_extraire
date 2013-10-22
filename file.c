@@ -17,6 +17,7 @@ typedef struct maillon_struct * maillon;
 typedef struct file_struct {
 	maillon head;
 	maillon tail;
+	int size;
 	void (* copier)(const void * valeur, void ** lieu);
 	void (* liberer)(void ** lieu);
 } file_struct;
@@ -30,6 +31,7 @@ typedef struct file_parcours_struct {
 int file_creer(file * file_lieu, void (* copier)(const void * valeur, void ** lieu), void (* liberer)(void ** lieu)) {
 	(* file_lieu) = (file) malloc(sizeof (file_struct));
 	(* file_lieu)->head = NULL;
+	(* file_lieu)->size = 0;
 	(* file_lieu)->copier = copier;
 	(* file_lieu)->liberer = liberer;
 
@@ -73,6 +75,7 @@ int file_ajouter(file list, const void * valeur) {
 		list->tail->next = m;
 		list->tail = m;
 	}
+	(list->size)++;
 
 	return 0;
 }
@@ -96,6 +99,7 @@ int file_retirer(file list, void ** lieu) {
 			free(list->head);
 			list->head = m;
 		}
+		(list->size)--;
 	}
 
 	return 0;
@@ -113,23 +117,11 @@ int file_est_vide(file list) {
 }
 
 int file_taille(file list) {
-	int count = 0;
-	maillon m = NULL;
-
 	if (list == NULL) {
 		return FILE_ERREUR_NOT_A_FILE;
 	}
-	m = list->head;
 
-	if (m != NULL) {
-		count = 1;
-		while (m->next != NULL) {
-			count++;
-			m = m->next;
-		}
-	}
-
-	return count;
+	return list->size;
 }
 
 file_parcours file_parcours_creer(file list) {

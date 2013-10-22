@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdarg.h>
 
+#include "outils.h"
+
 
 void libererSimple(void ** lieu) {
 	free(* lieu);
@@ -11,6 +13,38 @@ void libererSimple(void ** lieu) {
 void copierCharEtoile(const void * valeur, void ** lieu) {
 	(* lieu) = (char *) malloc((sizeof (char)) * (strlen((char *) valeur) + 1));
 	strcpy((* lieu), valeur);
+}
+
+void copierCharEtoileArray(const void * valeur, void ** lieu) {
+	int i;
+	charEtoileArray * cEAIn = NULL;
+	charEtoileArray * cEAOut = NULL;
+
+	cEAIn = (charEtoileArray *) valeur;
+	cEAOut = (charEtoileArray *) malloc(sizeof (charEtoileArray));
+	cEAOut->nbChs = cEAIn->nbChs;
+	cEAOut->chs = (char **) malloc((sizeof (char *)) * cEAOut->nbChs);
+
+	for (i = 0; i < cEAOut->nbChs; i++) {
+		copierCharEtoile((void *) cEAIn->chs[i], (void **) &(cEAOut->chs[i]));
+	}
+	(* lieu) = cEAOut;
+}
+
+void libererCharEtoileArray(void ** lieu) {
+	if ((* lieu) != NULL) {
+		{
+			int i;
+			charEtoileArray * cEA = NULL;
+			
+			cEA = (charEtoileArray *) (* lieu);
+			for (i = 0; i < cEA->nbChs; i++) {
+				libererSimple((void **) &(cEA->chs[i]));
+			}
+			libererSimple((void **) &(cEA->chs));
+			libererSimple((void **) &(cEA));
+		}
+	}
 }
 
 int isInVAList(char c, int argc, ...) {

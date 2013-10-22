@@ -4,6 +4,12 @@
 #include <setjmp.h>
 
 
+typedef struct charEtoileArray {
+	int nbChs;
+	char ** chs;
+} charEtoileArray;
+
+
 #define TRY do { jmp_buf ex_buf; switch(setjmp(ex_buf)){ case 0: while(1) {
 #define CATCH(x) break; case x:
 #define FINALLY break; } default:
@@ -15,6 +21,10 @@
 extern void libererSimple(void ** lieu);
 
 extern void copierCharEtoile(const void * valeur, void ** lieu);
+
+extern void copierCharEtoileArray(const void * valeur, void ** lieu);
+
+extern void libererCharEtoileArray(void ** lieu);
 
 extern int isInVAList(char c, int argc, ...);
 

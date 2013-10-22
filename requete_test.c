@@ -1,8 +1,3 @@
-/*
-	make compilation
-	gcc -ansi -Wall -Wextra -pedantic -ggdb -lm -o requete_test file.o outils.o requete.o requete_test.c
-	valgrind --leak-check=full --show-reachable=yes --track-origins=yes ./requete_test
-*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,9 +5,11 @@
 #include "requete.h"
 #include "outils.h"
 
+
 #define PRINT_T(x) printf("\tTest %d [", x)
 #define PRINT_T_OK() printf("] OK !\n")
 #define PRINT_T_ERROR() printf("] Failed !\n")
+
 
 int parseSyntaxChamp_test() {
 	int i;
@@ -251,15 +248,15 @@ int createRequete_test() {
 }
 
 int main(void) {
-	printf("parseSyntaxChamp_test : \n");
+	printf("parseSyntaxChamp_test() : \n");
 	if (parseSyntaxChamp_test() == 0) {
 		printf("OK !\n");
 	}
-	printf("parseSyntaxCondition_test : \n");
+	printf("parseSyntaxCondition_test() : \n");
 	if (parseSyntaxCondition_test() == 0) {
 		printf("OK !\n");
 	}
-	printf("createRequete_test : \n");
+	printf("createRequete_test() : \n");
 	if (createRequete_test() == 0) {
 		printf("OK !\n");
 	}

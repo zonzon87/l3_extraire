@@ -1,37 +1,73 @@
-/*
-	make compilation
-	gcc -ansi -Wall -Wextra -pedantic -ggdb -o outils_test outils.o outils_test.c
-	valgrind --leak-check=full --show-reachable=yes --track-origins=yes ./outils_test
-*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "outils.h"
 
+#define PRINT_T(x) printf("\tTest %d [", x)
+#define PRINT_T_OK() printf("] OK !\n")
+#define PRINT_T_ERROR() printf("] Failed !\n")
+
 
 int copierCharEtoile_test() {
 	char c1[] = "Bonjour, comment vas-tu ?";
-	void * c2;
+	void * c2 = NULL;
 
 	copierCharEtoile(c1, &c2);
 
+	PRINT_T(1);
 	if (strcmp(c1, c2) != 0) {
+		PRINT_T_ERROR();
 		return 1;
 	}
+	PRINT_T_OK();
+
 	libererSimple((void **) &c2);
 
 	return 0;
 }
 
-int main(void) {
-	int result;
+int copierCharEtoileArray_test() {
+	int i;
+	charEtoileArray * cEA1 = NULL;
+	charEtoileArray * cEA2 = NULL;
 
-	printf("copierCharEtoile_test : ");
-	result = copierCharEtoile_test();
-	if (result == 0) {
+	char c1[] = "Coucou";
+	char c2[] = "Salut, comment vas-tu ?";
+	char c3[] = "Bonjour";
+
+	cEA1 = (charEtoileArray *) malloc(sizeof (charEtoileArray));
+	cEA1->nbChs = 3;
+	cEA1->chs = (char **) malloc((sizeof (char *)) * cEA1->nbChs);
+	copierCharEtoile((void *) c1, (void **) &(cEA1->chs[0]));
+	copierCharEtoile((void *) c2, (void **) &(cEA1->chs[1]));
+	copierCharEtoile((void *) c3, (void **) &(cEA1->chs[2]));
+
+	copierCharEtoileArray((void *) cEA1, (void **) &(cEA2));
+
+	PRINT_T(1);
+	for (i = 0; i < cEA1->nbChs; i++) {
+		if (strcmp(cEA1->chs[i], cEA2->chs[i]) != 0) {
+			PRINT_T_ERROR();
+			return 1;
+		}
+	}
+	PRINT_T_OK();
+
+	libererCharEtoileArray((void **) &cEA1);
+	libererCharEtoileArray((void **) &cEA2);
+
+	return 0;
+}
+
+int main(void) {
+	printf("copierCharEtoile_test() : \n");
+	if (copierCharEtoile_test() == 0) {
 		printf("OK !\n");
-	} else {
-		printf("AT TEST %d ERROR", result);
+	}
+	printf("copierCharEtoileArray_test() : \n");
+	if (copierCharEtoileArray_test() == 0) {
+		printf("OK !\n");
 	}
 
 	return 0;
