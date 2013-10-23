@@ -4,7 +4,6 @@
 #include <string.h>
 
 #include "requete.h"
-#include "file.h"
 #include "outils.h"
 
 

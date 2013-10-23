@@ -60,6 +60,25 @@ int copierCharEtoileArray_test() {
 	return 0;
 }
 
+int removeHeadAndTailChar_test() {
+	char c1[] = "---Bonjour, comment vas-tu ?-------";
+	char * c2;
+
+	copierCharEtoile((void *) c1, (void **) &c2);
+	removeHeadAndTailChar(&c2, '-');
+
+	PRINT_T(1);
+	if (strcmp("Bonjour, comment vas-tu ?", c2) != 0) {
+		PRINT_T_ERROR();
+		return 1;
+	}
+	PRINT_T_OK();
+
+	libererSimple((void **) &c2);
+
+	return 0;
+}
+
 int main(void) {
 	printf("copierCharEtoile_test() : \n");
 	if (copierCharEtoile_test() == 0) {
@@ -69,6 +88,9 @@ int main(void) {
 	if (copierCharEtoileArray_test() == 0) {
 		printf("OK !\n");
 	}
-
+	printf("removeHeadAndTailChar_test() : \n");
+	if (removeHeadAndTailChar_test() == 0) {
+		printf("OK !\n");
+	}
 	return 0;
 }

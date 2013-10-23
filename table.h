@@ -2,6 +2,7 @@
 #define __TABLE_H__
 
 #include "file.h"
+#include "requete.h"
 
 
 typedef struct table {
@@ -9,7 +10,8 @@ typedef struct table {
 	file lines;
 } table;
 
-extern int createTable(table ** tab, );
+
+extern int createTable(table ** tab, char * fileName, int ordreLength, int * ordre);
 
 extern int createTables(file * tables, requete * reqIn, requete ** reqOut);
 

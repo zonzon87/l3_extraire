@@ -28,7 +28,9 @@ extern void libererCharEtoileArray(void ** lieu);
 
 extern int isInVAList(char c, int argc, ...);
 
-extern int isNumeric(const char * str, const int strLength);
+extern int isNumeric(const char * ch, const int strLength);
+
+extern void removeHeadAndTailChar(char ** ch, char c);
 
 
 #endif

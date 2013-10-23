@@ -64,16 +64,48 @@ int isInVAList(char c, int argc, ...) {
 	return 1;
 }
 
-int isNumeric(const char * str, const int strLength) {
+int isNumeric(const char * ch, const int strLength) {
 	int i;
 	int temp;
 
 	for (i = 0; i < strLength; i++) {
-		temp = (int) str[i];
+		temp = (int) ch[i];
 		if ((temp < 48) || (temp > 57)) { /* Si le caractère n'est pas compris entre '0' et '9' inclus, bref : n'est pas un chiffre. */
 			return 1;
 		}
 	}
 
 	return 0;
+}
+
+void removeHeadAndTailChar(char ** ch, char c) {
+	int i;
+	int start = - 1;
+	int end = - 1;
+	char * newCh = NULL;
+
+	for (i = 0; i < (int) strlen(* ch); i++) {
+		if ((* ch)[i] != c) {
+			if (start < 0) {
+				start = i;
+			} else {
+				end = i;
+			}
+		}
+	}
+	if (!((start < 0) && (end < 0))) {
+		{
+			int length = end - start + 1;
+
+			newCh = (char *) malloc((sizeof (char)) * (length + 1));
+			memcpy(newCh, (* ch) + start, (sizeof (char)) * length);
+			newCh[length] = '\0';
+		}
+	} else {
+		newCh = (char *) malloc(sizeof (char));
+		newCh[0] = '\0';
+	}
+
+	libererSimple((void **) ch);
+	(* ch) = newCh;
 }
