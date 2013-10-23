@@ -7,8 +7,11 @@
 typedef struct table {
 	int row;
 	file lines;
-}
+} table;
 
-extern int createFileTables(file * tables, requete * req);
+extern int createTable(table ** tab, );
+
+extern int createTables(file * tables, requete * reqIn, requete ** reqOut);
+
 
 #endif
