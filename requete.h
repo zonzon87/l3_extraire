@@ -4,12 +4,6 @@
 #include "file.h"
 
 
-#define MISSING_ARGS_EXCEPTION 1
-#define KEYWORD_EXCEPTION 2
-#define SYNTAX_CHAMP_EXCEPTION 3
-#define SYNTAX_CONDITION_EXCEPTION 4
-#define INCOHERENT_REQUETE_EXCEPTION 5
-
 #define S_OF "de"
 #define S_WITH "avec"
 #define S_ORDER "ordre"
@@ -17,6 +11,12 @@
 #define C_ORDER 'o'
 #define C_SINGLE 'u'
 #define C_NO_OPTION ' '
+
+#define MISSING_ARGS_EXCEPTION 1
+#define KEYWORD_EXCEPTION 2
+#define SYNTAX_CHAMP_EXCEPTION 3
+#define SYNTAX_CONDITION_EXCEPTION 4
+#define INCOHERENT_REQUETE_EXCEPTION 5
 
 
 typedef struct champ {

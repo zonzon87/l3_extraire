@@ -12,7 +12,7 @@ LFLAGS := -lm
 # Options de valgrind
 VFLAGS := --leak-check=full --show-reachable=yes --track-origins=yes
 
-.PHONY : all compilation test memoire alltest file_test outils_test requete_test archive clean
+.PHONY : all compilation test memoire alltest file_test outils_test requete_test table_test archive clean
 
 # Construction par défaut :
 all :
@@ -68,7 +68,7 @@ memoire : extraire
 #	@valgrind $(VFLAGS) ./extraire $(TEST_REQUETE_2) >/dev/null
 
 # Lance tout les tests de module existants
-alltest : file_test outils_test requete_test
+alltest : file_test outils_test requete_test table_test
 
 # TEST du module FILE avec un TEST MÉMOIRE
 file_test : file.o file_test.c
@@ -84,6 +84,11 @@ outils_test : outils.o outils_test.c
 
 # TEST du module REQUETE avec un TEST MÉMOIRE
 requete_test : requete.o file.o outils.o requete_test.c
+	@$(CC) $(CFLAGS) $(LFLAGS) -o $@ $^
+	@valgrind $(VFLAGS) ./$@
+
+# TEST du module TABLE avec un TEST MÉMOIRE
+table_test : table.o file.o outils.o table_test.c
 	@$(CC) $(CFLAGS) $(LFLAGS) -o $@ $^
 	@valgrind $(VFLAGS) ./$@
 
