@@ -14,7 +14,7 @@ int copierCharEtoile_test() {
 	char c1[] = "Bonjour, comment vas-tu ?";
 	void * c2 = NULL;
 
-	copierCharEtoile(c1, &c2);
+	copierCharE(c1, &c2);
 
 	PRINT_T(1);
 	if (strcmp(c1, c2) != 0) {
@@ -30,21 +30,21 @@ int copierCharEtoile_test() {
 
 int copierCharEtoileArray_test() {
 	int i;
-	charEtoileArray * cEA1 = NULL;
-	charEtoileArray * cEA2 = NULL;
+	xEArray * cEA1 = NULL;
+	xEArray * cEA2 = NULL;
 
 	char c1[] = "Coucou";
 	char c2[] = "Salut, comment vas-tu ?";
 	char c3[] = "Bonjour";
 
-	cEA1 = (charEtoileArray *) malloc(sizeof (charEtoileArray));
+	cEA1 = (xEArray *) malloc(sizeof (xEArray));
 	cEA1->nbChs = 3;
 	cEA1->chs = (char **) malloc((sizeof (char *)) * cEA1->nbChs);
-	copierCharEtoile((void *) c1, (void **) &(cEA1->chs[0]));
-	copierCharEtoile((void *) c2, (void **) &(cEA1->chs[1]));
-	copierCharEtoile((void *) c3, (void **) &(cEA1->chs[2]));
+	copierCharE((void *) c1, (void **) &(cEA1->chs[0]));
+	copierCharE((void *) c2, (void **) &(cEA1->chs[1]));
+	copierCharE((void *) c3, (void **) &(cEA1->chs[2]));
 
-	copierCharEtoileArray((void *) cEA1, (void **) &(cEA2));
+	copierXEArray((void *) cEA1, (void **) &(cEA2));
 
 	PRINT_T(1);
 	for (i = 0; i < cEA1->nbChs; i++) {
@@ -55,34 +55,8 @@ int copierCharEtoileArray_test() {
 	}
 	PRINT_T_OK();
 
-	libererCharEtoileArray((void **) &cEA1);
-	libererCharEtoileArray((void **) &cEA2);
-
-	return 0;
-}
-
-int getLine_test(char * fileName) {
-	int lastLine = 0;
-	FILE * fichier = NULL;
-	char * ch = NULL;
-
-	fichier = fopen(fileName, "r");
-
-	if (fichier != NULL)
-	{
-		printf("%s:\n", fileName);
-		while (lastLine != LINE_EOF) {
-			lastLine = getLine(&ch, fichier);
-			printf("%s\n", ch);
-			libererSimple((void **) &ch);
-		}
-
-		fclose(fichier);
-	} else {
-		P_ERROR_MISSINGFILE(fileName);
-
-		return 1;
-	}
+	libererXEArray((void **) &cEA1);
+	libererXEArray((void **) &cEA2);
 
 	return 0;
 }
@@ -91,7 +65,7 @@ int removeHeadAndTailChar_test() {
 	char c1[] = "---Bonjour, comment vas-tu ?-------";
 	char * c2;
 
-	copierCharEtoile((void *) c1, (void **) &c2);
+	copierCharE((void *) c1, (void **) &c2);
 	removeHeadAndTailChar(&c2, '-');
 
 	PRINT_T(1);
@@ -115,14 +89,10 @@ int main(void) {
 	if (copierCharEtoileArray_test() == 0) {
 		printf("OK !\n");
 	}
-	printf("getLine_test() : \n");
-	if (getLine_test("Donnees/repas.table") == 0) {
-		printf("Fichier lu, vérifier les données manuellement!\n");
-	}
 	printf("removeHeadAndTailChar_test() : \n");
 	if (removeHeadAndTailChar_test() == 0) {
 		printf("OK !\n");
 	}
-	
+
 	return 0;
 }

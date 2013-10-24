@@ -15,6 +15,41 @@ void destroyTable(table ** tab) {
 }
 
 /* Vérifié. */
+int getLine(char ** line, FILE * fichier) {
+	int bufferLength = 0;
+	int bufferCount = 0;
+	int length = 0;
+	char c = '\0';
+	char * buffer = NULL;
+
+	while ((c != '\r') && (c != '\n') && (c != EOF)) {
+		if(bufferCount == bufferLength) {
+			bufferCount = 0;
+			bufferLength += TABLE_BUFFER;
+			buffer = (char *) realloc(buffer, bufferLength);
+		}
+		c = getc(fichier);
+		buffer[length] = c;
+		length++;
+		bufferCount++;
+	}
+	if (c == '\r') {
+		c = getc(fichier);
+		if (c != '\n') {
+			fseek(fichier, -1, SEEK_CUR);
+		}
+	}
+	buffer[length - 1] = '\0';
+
+	(* line) = buffer;
+
+	if (c == EOF) {
+		return LINE_EOF;
+	}
+	return 0;
+}
+
+/* Vérifié. */
 int countNumberOfChamps(char * str, const char * delimitor) {
 	int i = 0;
 	char * token = NULL;
@@ -29,20 +64,20 @@ int countNumberOfChamps(char * str, const char * delimitor) {
 }
 
 /* Vérifié. */
-int divideCharEtoiletoCharEtoileArray(charEtoileArray ** dest, int nbElements, const char * delimitor, char * src) {
+int divideCharEtoCharEArray(xEArray ** dest, int nbElements, const char * delimitor, char * src) {
 	int i = 0;
 	char * token = NULL;
-	charEtoileArray * cEA = NULL;
+	xEArray * cEA = NULL;
 
-	creerCharEtoileArray(&cEA, nbElements);
+	creerXEArray(&cEA, nbElements);
 
 	token = strtok(src, delimitor);
 	while (token != NULL) {
-		if (i < nbElements) { 
-			copierCharEtoile((void *) token, (void **) &(cEA->chs[i]));
+		if (i < nbElements) {
+			copierCharE((void *) token, (void **) &(cEA->chs[i]));
 			removeHeadAndTailChar(&(cEA->chs[i]), TOKENGARBAGE);
 		} else {
-			libererCharEtoileArray((void **) &cEA);
+			libererXEArray((void **) &cEA);
 			return ERROR_MALFORMEDFILE;
 		}
 		i++;
@@ -50,7 +85,7 @@ int divideCharEtoiletoCharEtoileArray(charEtoileArray ** dest, int nbElements, c
 	}
 
 	if (i != nbElements) {
-		libererCharEtoileArray((void **) &cEA);
+		libererXEArray((void **) &cEA);
 		return ERROR_MALFORMEDFILE;
 	}
 
@@ -60,14 +95,14 @@ int divideCharEtoiletoCharEtoileArray(charEtoileArray ** dest, int nbElements, c
 }
 
 /* Vérifié. */
-int rearrangeLineRows(charEtoileArray ** cEAOut, charEtoileArray * cEAIn, file_parcours values, int nbValues) {
+int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, file_parcours values, int nbValues) {
 	int i = 0;
 	int * value;
 
-	creerCharEtoileArray(cEAOut, nbValues);
+	creerXEArray(cEAOut, nbValues);
 	while (!file_parcours_est_fini(values)) {
 		file_parcours_suivant(values, (void **) &value);
-		copierCharEtoile((void *) (cEAIn->chs[* value]), (void **) &((* cEAOut)->chs[i]));
+		copierCharE((void *) (cEAIn->chs[* value]), (void **) &((* cEAOut)->chs[i]));
 		libererSimple((void **) &value);
 		i++;
 	}
@@ -87,11 +122,11 @@ int createTable(table ** tab, const char * fileName, file ordreApparitions, int 
 		int lastLine = 0;
 		char * line = NULL;
 		file_parcours values = NULL;
-		charEtoileArray * cEAIn = NULL;
-		charEtoileArray * cEAOut = NULL;
+		xEArray * cEAIn = NULL;
+		xEArray * cEAOut = NULL;
 
 		(* tab) = (table *) malloc(sizeof (table));
-		file_creer(&((* tab)->lines), &copierCharEtoileArray, &libererCharEtoileArray);
+		file_creer(&((* tab)->lines), &copierXEArray, &libererXEArray);
 
 		/* Si il y au moins un champ à extraire. */
 		if (file_taille(ordreApparitions) > 0) {
@@ -111,7 +146,7 @@ int createTable(table ** tab, const char * fileName, file ordreApparitions, int 
 			rewind(fichier);
 			while (lastLine != LINE_EOF) {
 				lastLine = getLine(&line, fichier);
-				result = divideCharEtoiletoCharEtoileArray(&cEAIn, nbChamps, TOKENDELIMITOR, line);
+				result = divideCharEtoCharEArray(&cEAIn, nbChamps, TOKENDELIMITOR, line);
 				libererSimple((void **) &line);
 
 				if (result != 0) {
@@ -120,7 +155,7 @@ int createTable(table ** tab, const char * fileName, file ordreApparitions, int 
 					}
 
 					destroyTable(tab);
-					libererCharEtoileArray((void **) &cEAIn);
+					libererXEArray((void **) &cEAIn);
 					fclose(fichier);
 					return result;
 				}
@@ -129,7 +164,7 @@ int createTable(table ** tab, const char * fileName, file ordreApparitions, int 
 				rearrangeLineRows(&cEAOut, cEAIn, values, file_taille(ordreApparitions));
 				file_parcours_detruire(&values);
 				file_ajouter((* tab)->lines, cEAOut);
-				libererCharEtoileArray((void **) &cEAOut);
+				libererXEArray((void **) &cEAOut);
 			}
 		}
 

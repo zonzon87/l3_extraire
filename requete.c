@@ -34,7 +34,7 @@ void copierCondition(const void * valeur, void ** lieu) {
 	(* lieu) = (condition *) malloc(sizeof (condition));
 
 	copierChamp((void *) (co->champ1), (void **) &(((condition *) (* lieu))->champ1));
-	copierCharEtoile((void *) (co->comparisonOperator), (void **) &(((condition *) (* lieu))->comparisonOperator));
+	copierCharE((void *) (co->comparisonOperator), (void **) &(((condition *) (* lieu))->comparisonOperator));
 	copierChamp((void *) (co->champ2), (void **) &(((condition *) (* lieu))->champ2));
 }
 
@@ -76,7 +76,7 @@ int base26to10(int * result, const char * str, const int strLength) {
 	return 0;
 }
 
-int parseSyntaxChamp(champ ** ch, const char separatorChamp, const char * c) {
+int parseSyntaxChamp(champ ** ch, const char separatorChamp, const char * str) {
 	int a;
 	int length;
 	int separatorChampPosition = -1;
@@ -84,9 +84,9 @@ int parseSyntaxChamp(champ ** ch, const char separatorChamp, const char * c) {
 	int tableNumber;
 	int rowNumber;
 
-	length = (int) strlen(c);
+	length = (int) strlen(str);
 	for (a = 0; a < length; a++) {
-		if (c[a] == separatorChamp) {
+		if (str[a] == separatorChamp) {
 			if (separatorChampPosition < 0) {
 				separatorChampPosition = a;
 			} else {
@@ -108,7 +108,7 @@ int parseSyntaxChamp(champ ** ch, const char separatorChamp, const char * c) {
 		/* To comment */
 		tokenLength = separatorChampPosition;
 		token = (char *) malloc((sizeof (char)) * (tokenLength + 1));
-		memcpy(token, c, (sizeof (char)) * tokenLength);
+		memcpy(token, str, (sizeof (char)) * tokenLength);
 		token[tokenLength] = '\0';
 
 		a = base26to10(&tableNumber, token, tokenLength);
@@ -121,7 +121,7 @@ int parseSyntaxChamp(champ ** ch, const char separatorChamp, const char * c) {
 		/* To comment */
 		tokenLength = length - (separatorChampPosition + 1);
 		token = (char *) malloc((sizeof (char)) * (tokenLength + 1));
-		memcpy(token, c + separatorChampPosition + 1, (sizeof (char)) * tokenLength);
+		memcpy(token, str + separatorChampPosition + 1, (sizeof (char)) * tokenLength);
 		token[tokenLength] = '\0';
 
 		a = isNumeric(token, tokenLength);
@@ -134,7 +134,7 @@ int parseSyntaxChamp(champ ** ch, const char separatorChamp, const char * c) {
 			rowNumber--;
 		}
 	}
-	
+
 	(* ch) = (champ *) malloc(sizeof (champ));
 	(* ch)->table = tableNumber;
 	(* ch)->row = rowNumber;
@@ -142,7 +142,7 @@ int parseSyntaxChamp(champ ** ch, const char separatorChamp, const char * c) {
 	return 0;
 }
 
-int parseSyntaxCondition(condition ** co, const char separatorChamp, const char * c) {
+int parseSyntaxCondition(condition ** co, const char separatorChamp, const char * str) {
 	int a;
 	int length;
 	int separatorConditionPositionStart = -1;
@@ -152,7 +152,7 @@ int parseSyntaxCondition(condition ** co, const char separatorChamp, const char 
 	char * comparisonOperator = NULL;
 	champ * champ2 = NULL;
 
-	length = (int) strlen(c);
+	length = (int) strlen(str);
 	{
 		char lastChar = '\0';
 		int cOTempI = 0;
@@ -161,27 +161,27 @@ int parseSyntaxCondition(condition ** co, const char separatorChamp, const char 
 		for (a = 0; a < length; a++) {
 			if (!(separatorConditionPositionStart < 0)) {
 				if	(
-					(((lastChar == '<') || (lastChar == '>')) && (isInVAList(c[a], 2, '=', '.') == 0))
+					(((lastChar == '<') || (lastChar == '>')) && (isInVAList(str[a], 2, '=', '.') == 0))
 					||
-					((lastChar == '!') && (c[a] == '='))
+					((lastChar == '!') && (str[a] == '='))
 					||
-					((lastChar == '=') && (c[a] == '.'))
+					((lastChar == '=') && (str[a] == '.'))
 					)
 				{
-					cOTemp[cOTempI] = c[a];
+					cOTemp[cOTempI] = str[a];
 					cOTempI++;
 				} else {
 					separatorConditionPositionEnd = a - 1;
 					break;
 				}
 			} else {
-				if (isInVAList(c[a], 4, '<', '>', '!', '=') == 0) {
-					cOTemp[cOTempI] = c[a];
+				if (isInVAList(str[a], 4, '<', '>', '!', '=') == 0) {
+					cOTemp[cOTempI] = str[a];
 					cOTempI++;
 					separatorConditionPositionStart = a;
 				}
 			}
-			lastChar = c[a];
+			lastChar = str[a];
 		}
 		if (!(((separatorConditionPositionStart > 0) && (separatorConditionPositionEnd > 0)) &&
 			((separatorConditionPositionStart < (length - 1)) && (separatorConditionPositionEnd < (length - 1))))) {
@@ -199,7 +199,7 @@ int parseSyntaxCondition(condition ** co, const char separatorChamp, const char 
 		/* To comment */
 		tokenLength = separatorConditionPositionStart;
 		token = (char *) malloc((sizeof (char)) * (tokenLength + 1));
-		memcpy(token, c, (sizeof (char)) * tokenLength);
+		memcpy(token, str, (sizeof (char)) * tokenLength);
 		token[tokenLength] = '\0';
 
 		a = parseSyntaxChamp(&champ1, separatorChamp, token);
@@ -213,7 +213,7 @@ int parseSyntaxCondition(condition ** co, const char separatorChamp, const char 
 
 		tokenLength = length - (separatorConditionPositionEnd + 1);
 		token = (char *) malloc((sizeof (char)) * (tokenLength + 1));
-		memcpy(token, c + separatorConditionPositionEnd + 1, (sizeof (char)) * tokenLength);
+		memcpy(token, str + separatorConditionPositionEnd + 1, (sizeof (char)) * tokenLength);
 		token[tokenLength] = '\0';
 
 		a = parseSyntaxChamp(&champ2, separatorChamp, token);
@@ -246,10 +246,10 @@ int createRequete(requete ** req, const int argc, const char * argv[]) {
 	int maxNbTableAccess = -1;
 	int coherentSort = 0; /* 0 incohérent ou 1 cohérent */
 	int returnValue = 0;
-	
+
 	(* req) = (requete *) malloc(sizeof (requete));
 	file_creer(&((* req)->champsSortie), &copierChamp, &libererSimple);
-	file_creer(&((* req)->nomsTables), &copierCharEtoile, &libererSimple);
+	file_creer(&((* req)->nomsTables), &copierCharE, &libererSimple);
 	file_creer(&((* req)->conditions), &copierCondition, &libererCondition);
 	(* req)->option = C_NO_OPTION;
 	(* req)->champOrdre = NULL;
@@ -320,7 +320,7 @@ int createRequete(requete ** req, const int argc, const char * argv[]) {
 			} /* else { Tout va bien } */
 		}
 
-		/* Vérification syntaxique et ajout des champs à extraire. 
+		/* Vérification syntaxique et ajout des champs à extraire.
 			+ champ de tri (si nécessaire).
 		*/
 		{

@@ -12,22 +12,22 @@ void libererSimple(void ** lieu) {
 }
 
 /* Vérifié. */
-void copierIntEtoile(const void * valeur, void ** lieu) {
+void copierIntE(const void * valeur, void ** lieu) {
 	(* lieu) = (void *) malloc (sizeof (int));
 	(** ((int **) lieu)) = (* ((int *) valeur));
 }
 
 /* Vérifié */
-void copierCharEtoile(const void * valeur, void ** lieu) {
+void copierCharE(const void * valeur, void ** lieu) {
 	(* lieu) = (char *) malloc((sizeof (char)) * (strlen((char *) valeur) + 1));
 	strcpy((* lieu), valeur);
 }
 
 /* Vérifié. */
-void creerCharEtoileArray(charEtoileArray ** cEA, int nbElements) {
+void creerXEArray(xEArray ** cEA, int nbElements) {
 	int i;
 
-	(* cEA) = (charEtoileArray *) malloc(sizeof (charEtoileArray));
+	(* cEA) = (xEArray *) malloc(sizeof (xEArray));
 	(* cEA)->nbChs = nbElements;
 	(* cEA)->chs = (char **) malloc((sizeof (char *)) * nbElements);
 	for (i = 0; i < nbElements; i++) {
@@ -36,27 +36,27 @@ void creerCharEtoileArray(charEtoileArray ** cEA, int nbElements) {
 }
 
 /* Vérifié. */
-void copierCharEtoileArray(const void * valeur, void ** lieu) {
+void copierXEArray(const void * valeur, void ** lieu) {
 	int i;
-	charEtoileArray * cEAIn = NULL;
-	charEtoileArray * cEAOut = NULL;
+	xEArray * cEAIn = NULL;
+	xEArray * cEAOut = NULL;
 
-	cEAIn = (charEtoileArray *) valeur;
-	creerCharEtoileArray(&cEAOut, cEAIn->nbChs);
+	cEAIn = (xEArray *) valeur;
+	creerXEArray(&cEAOut, cEAIn->nbChs);
 	for (i = 0; i < cEAOut->nbChs; i++) {
-		copierCharEtoile((void *) cEAIn->chs[i], (void **) &(cEAOut->chs[i]));
+		copierCharE((void *) cEAIn->chs[i], (void **) &(cEAOut->chs[i]));
 	}
 	(* lieu) = cEAOut;
 }
 
 /* Vérifié. */
-void libererCharEtoileArray(void ** lieu) {
+void libererXEArray(void ** lieu) {
 	if ((* lieu) != NULL) {
 		{
 			int i;
-			charEtoileArray * cEA = NULL;
-			
-			cEA = (charEtoileArray *) (* lieu);
+			xEArray * cEA = NULL;
+
+			cEA = (xEArray *) (* lieu);
 			for (i = 0; i < cEA->nbChs; i++) {
 				libererSimple((void **) &(cEA->chs[i]));
 			}
@@ -96,41 +96,6 @@ int isNumeric(const char * str, const int strLength) {
 		}
 	}
 
-	return 0;
-}
-
-/* Vérifié. */
-int getLine(char ** line, FILE * fichier) {
-	int bufferLength = 0;
-	int bufferCount = 0;
-	int length = 0;
-	char c = '\0';
-	char * buffer = NULL;
-
-	while ((c != '\r') && (c != '\n') && (c != EOF)) {
-		if(bufferCount == bufferLength) {
-			bufferCount = 0;
-			bufferLength += TABLE_BUFFER;
-			buffer = (char *) realloc(buffer, bufferLength);
-		}
-		c = getc(fichier);
-		buffer[length] = c;
-		length++;
-		bufferCount++;
-	}
-	if (c == '\r') {
-		c = getc(fichier);
-		if (c != '\n') {
-			fseek(fichier, -1, SEEK_CUR);
-		}
-	}
-	buffer[length - 1] = '\0';
-
-	(* line) = buffer;
-
-	if (c == EOF) {
-		return LINE_EOF;
-	}
 	return 0;
 }
 

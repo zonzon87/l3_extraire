@@ -97,4 +97,4 @@ archive :
 	@tar czf PASD_mini-projet.tgz Makefile *.c *.h LICENSE README compte-rendu.pdf
 
 clean :
-	rm *.o
+	rm -v *.o
