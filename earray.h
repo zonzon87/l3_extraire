@@ -7,8 +7,8 @@
 
 
 typedef struct xEArray {
-	int nbChs;
-	void ** chs;
+	int nbElements;
+	void ** elements;
 	void (* copier)(const void * valeur, void ** lieu);
 	void (* liberer)(void ** lieu);
 } xEArray;

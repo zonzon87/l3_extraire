@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "table.h"
-#include "outils.h"
 
 
 /* Vérifié. */
@@ -180,8 +179,8 @@ int createTable(table ** tab, const char * fileName, file ordreApparitions, int 
 	return 0;
 }
 
-int createTables(table ** tables, requete * reqIn, requete ** reqOut) {
+int createTables(table ** tables, file * tabFChamps, int nbFichiers) {
 
-
+	
 	return 0;
 }

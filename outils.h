@@ -14,7 +14,7 @@
 
 extern void libererSimple(void ** lieu);
 
-extern void copierInt(const void * valeur, void ** lieu);
+extern void copierIntE(const void * valeur, void ** lieu);
 
 extern void copierCharE(const void * valeur, void ** lieu);
 

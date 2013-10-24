@@ -8,10 +8,10 @@ void creerXEArray(xEArray ** xEA, int nbElements, void (* copier)(const void * v
 	int i;
 
 	(* xEA) = (xEArray *) malloc(sizeof (xEArray));
-	(* xEA)->nbChs = nbElements;
-	(* xEA)->chs = (void **) malloc((sizeof (void *)) * nbElements);
+	(* xEA)->nbElements = nbElements;
+	(* xEA)->elements = (void **) malloc((sizeof (void *)) * nbElements);
 	for (i = 0; i < nbElements; i++) {
-		(* xEA)->chs[i] = NULL;
+		(* xEA)->elements[i] = NULL;
 	}
 	(* xEA)->copier = copier;
 	(* xEA)->liberer = liberer;
@@ -19,7 +19,7 @@ void creerXEArray(xEArray ** xEA, int nbElements, void (* copier)(const void * v
 
 /* Vérifié. */
 void * accesXEArray(xEArray * xEA, int index) {
-	return xEA->chs[index];
+	return xEA->elements[index];
 }
 
 /* Vérifié. */
@@ -29,17 +29,17 @@ int ajouterXEArray(xEArray * xEA, int index, const void * valeur) {
 	}
 
 	/* Si l'index est erroné. */
-	if ((index < 0) || (index > (xEA->nbChs - 1))) {
+	if ((index < 0) || (index > (xEA->nbElements - 1))) {
 		return EARRAY_WRONGINDEX;
 	}
 
 	/* Si une valeur est déjà présente. */
-	if (xEA->chs[index] != NULL) {
+	if (xEA->elements[index] != NULL) {
 		/* On libère l'ancienne valeur. */
-		(* (xEA->liberer))((void **) &(xEA->chs[index]));
+		(* (xEA->liberer))((void **) &(xEA->elements[index]));
 	}
 	/* On copie la nouvelle valeur. */
-	(* (xEA->copier))(valeur, (void **) &(xEA->chs[index]));
+	(* (xEA->copier))(valeur, (void **) &(xEA->elements[index]));
 
 	return 0;
 }
@@ -52,9 +52,9 @@ void copierXEArray(const void * valeur, void ** lieu) {
 
 	if (valeur != NULL) {
 		xEAIn = (xEArray *) valeur;
-		creerXEArray(&xEAOut, xEAIn->nbChs, xEAIn->copier, xEAIn->liberer);
-		for (i = 0; i < xEAOut->nbChs; i++) {
-			(* (xEAIn->copier))((void *) xEAIn->chs[i], (void **) &(xEAOut->chs[i]));
+		creerXEArray(&xEAOut, xEAIn->nbElements, xEAIn->copier, xEAIn->liberer);
+		for (i = 0; i < xEAOut->nbElements; i++) {
+			(* (xEAIn->copier))((void *) xEAIn->elements[i], (void **) &(xEAOut->elements[i]));
 		}
 	}
 	(* lieu) = xEAOut;
@@ -68,11 +68,11 @@ void libererXEArray(void ** lieu) {
 			xEArray * xEA = NULL;
 
 			xEA = (xEArray *) (* lieu);
-			for (i = 0; i < xEA->nbChs; i++) {
-				(* (xEA->liberer))((void **) &(xEA->chs[i]));
+			for (i = 0; i < xEA->nbElements; i++) {
+				(* (xEA->liberer))((void **) &(xEA->elements[i]));
 			}
-			free(xEA->chs);
-			xEA->chs = NULL;
+			free(xEA->elements);
+			xEA->elements = NULL;
 			free(xEA);
 			xEA = NULL;
 		}

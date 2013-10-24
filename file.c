@@ -1,30 +1,10 @@
 #include <stdlib.h>
 
 #include "file.h"
+#include "file_extend.h"
 
 
 #define FILE_ERREUR_NOT_A_FILE_PARCOURS -1
-
-
-typedef struct maillon_struct {
-	void * data;
-	struct maillon_struct * next;
-} maillon_struct;
-
-typedef struct maillon_struct * maillon;
-
-typedef struct file_struct {
-	maillon head;
-	maillon tail;
-	int size;
-	void (* copier)(const void * valeur, void ** lieu);
-	void (* liberer)(void ** lieu);
-} file_struct;
-
-typedef struct file_parcours_struct {
-	file list;
-	maillon pointerMaillon;
-} file_parcours_struct;
 
 
 int file_creer(file * file_lieu, void (* copier)(const void * valeur, void ** lieu), void (* liberer)(void ** lieu)) {
@@ -51,7 +31,7 @@ int file_detruire(file * list) {
 	/* On détruit la file. */
 	free(* list);
 	(* list) = NULL;
-	
+
 	return 0;
 }
 

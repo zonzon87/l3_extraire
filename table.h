@@ -19,6 +19,7 @@
 
 
 typedef struct table {
+	int nbRows;
 	file lines;
 } table;
 
@@ -47,7 +48,7 @@ extern int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, file_parcours v
 
 extern int createTable(table ** tab, const char * fileName, file ordreApparitions, int maxValue);
 
-extern int createTables(table ** tables, requete * reqIn, requete ** reqOut);
+extern int createTables(table ** tables, file * tabFChamps, int nbFichiers);
 
 
 #endif

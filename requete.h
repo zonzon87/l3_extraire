@@ -47,6 +47,8 @@ extern void copierCondition(const void * valeur, void ** lieu);
 
 extern void libererCondition(void ** lieu);
 
+extern void newRequete(requete ** req);
+
 extern void destroyRequete(requete ** req);
 
 extern int base26to10(int * result, const char * str, const int strLength);
@@ -56,6 +58,8 @@ extern int parseSyntaxChamp(champ ** ch, const char separatorChamp, const char *
 extern int parseSyntaxCondition(condition ** co, const char separatorChamp, const char * str);
 
 extern int createRequete(requete ** req, const int argc, const char * argv[]);
+
+extern int optimizeRequete(const requete * reqInit, requete ** reqOpt, file ** champs);
 
 
 #endif

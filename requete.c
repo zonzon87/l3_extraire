@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "requete.h"
+#include "file_extend.h"
 #include "outils.h"
 
 
@@ -45,6 +46,15 @@ void libererCondition(void ** lieu) {
 		libererSimple((void **) &(((condition *) (* lieu))->champ2));
 		libererSimple(lieu);
 	}
+}
+
+void newRequete(requete ** req) {
+    (* req) = (requete *) malloc(sizeof (requete));
+	file_creer(&((* req)->champsSortie), &copierChamp, &libererSimple);
+	file_creer(&((* req)->nomsTables), &copierCharE, &libererSimple);
+	file_creer(&((* req)->conditions), &copierCondition, &libererCondition);
+	(* req)->option = C_NO_OPTION;
+	(* req)->champOrdre = NULL;
 }
 
 void destroyRequete(requete ** req) {
@@ -247,12 +257,7 @@ int createRequete(requete ** req, const int argc, const char * argv[]) {
 	int coherentSort = 0; /* 0 incohérent ou 1 cohérent */
 	int returnValue = 0;
 
-	(* req) = (requete *) malloc(sizeof (requete));
-	file_creer(&((* req)->champsSortie), &copierChamp, &libererSimple);
-	file_creer(&((* req)->nomsTables), &copierCharE, &libererSimple);
-	file_creer(&((* req)->conditions), &copierCondition, &libererCondition);
-	(* req)->option = C_NO_OPTION;
-	(* req)->champOrdre = NULL;
+    newRequete(req);
 
 	TRY {
 		/* Test du nombre d'arguments. */
@@ -422,4 +427,24 @@ int createRequete(requete ** req, const int argc, const char * argv[]) {
 	} ETRY;
 
 	return returnValue;
+}
+
+int optimizeRequete(const requete * reqInit, requete ** reqOpt, file ** champsOut) {
+	int a;
+	int nbFichiers;
+	file * champs = NULL;
+	file_parcours parcours = NULL;
+
+    nbFichiers = file_taille(reqInit->nomsTables);
+
+	champs = (file *) malloc((sizeof (file_struct)) * nbFichiers);
+	for (a = 0; a < nbFichiers; a++) {
+		file_creer(&(champs[a]), &copierIntE, &libererSimple);
+	}
+
+	file_parcours_creer(reqInit->champsSortie);
+
+
+
+	return 0;
 }
