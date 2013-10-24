@@ -64,18 +64,20 @@ int countNumberOfChamps(char * str, const char * delimitor) {
 }
 
 /* Vérifié. */
-int divideCharEtoCharEArray(xEArray ** dest, int nbElements, const char * delimitor, char * src) {
+int divideCharEToCharEArray(xEArray ** dest, int nbElements, const char * delimitor, char * src) {
 	int i = 0;
+	char * temp;
 	char * token = NULL;
 	xEArray * cEA = NULL;
 
-	creerXEArray(&cEA, nbElements);
+	creerXEArray(&cEA, nbElements, &copierCharE, &libererSimple);
 
 	token = strtok(src, delimitor);
 	while (token != NULL) {
 		if (i < nbElements) {
-			copierCharE((void *) token, (void **) &(cEA->chs[i]));
-			removeHeadAndTailChar(&(cEA->chs[i]), TOKENGARBAGE);
+			ajouterXEArray(cEA, i, (void *) token);
+			temp = (char *) accesXEArray(cEA, i);
+			removeHeadAndTailChar(&temp, TOKENGARBAGE);
 		} else {
 			libererXEArray((void **) &cEA);
 			return ERROR_MALFORMEDFILE;
@@ -99,10 +101,10 @@ int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, file_parcours values, 
 	int i = 0;
 	int * value;
 
-	creerXEArray(cEAOut, nbValues);
+	creerXEArray(cEAOut, nbValues, &copierCharE, &libererSimple);
 	while (!file_parcours_est_fini(values)) {
 		file_parcours_suivant(values, (void **) &value);
-		copierCharE((void *) (cEAIn->chs[* value]), (void **) &((* cEAOut)->chs[i]));
+		ajouterXEArray(* cEAOut, i, accesXEArray(cEAIn, * value));
 		libererSimple((void **) &value);
 		i++;
 	}
@@ -146,7 +148,7 @@ int createTable(table ** tab, const char * fileName, file ordreApparitions, int 
 			rewind(fichier);
 			while (lastLine != LINE_EOF) {
 				lastLine = getLine(&line, fichier);
-				result = divideCharEtoCharEArray(&cEAIn, nbChamps, TOKENDELIMITOR, line);
+				result = divideCharEToCharEArray(&cEAIn, nbChamps, TOKENDELIMITOR, line);
 				libererSimple((void **) &line);
 
 				if (result != 0) {

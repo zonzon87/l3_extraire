@@ -5,12 +5,6 @@
 #include <setjmp.h>
 
 
-typedef struct xEArray {
-	int nbChs;
-	char ** chs;
-} xEArray;
-
-
 #define TRY do { jmp_buf ex_buf; switch(setjmp(ex_buf)){ case 0: while(1) {
 #define CATCH(x) break; case x:
 #define FINALLY break; } default:
@@ -23,12 +17,6 @@ extern void libererSimple(void ** lieu);
 extern void copierInt(const void * valeur, void ** lieu);
 
 extern void copierCharE(const void * valeur, void ** lieu);
-
-extern void creerXEArray(xEArray ** cEA, int nbElements);
-
-extern void copierXEArray(const void * valeur, void ** lieu);
-
-extern void libererXEArray(void ** lieu);
 
 extern int isInVAList(char c, int argc, ...);
 

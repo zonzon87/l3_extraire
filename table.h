@@ -2,6 +2,7 @@
 #define __TABLE_H__
 
 #include "file.h"
+#include "earray.h"
 #include "outils.h"
 #include "requete.h"
 
@@ -40,7 +41,7 @@ extern int getLine(char ** line, FILE * fichier);
 
 extern int countNumberOfChamps(char * str, const char * delimitor);
 
-extern int divideCharEtoCharEArray(xEArray ** dest, int nbElements, const char * delimitor, char * src);
+extern int divideCharEToCharEArray(xEArray ** dest, int nbElements, const char * delimitor, char * src);
 
 extern int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, file_parcours values, int nbValues);
 

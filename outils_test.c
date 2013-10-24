@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "test.h"
 #include "outils.h"
 
 
@@ -10,7 +11,7 @@
 #define PRINT_T_ERROR() printf("] Failed !\n")
 
 
-int copierCharEtoile_test() {
+int copierCharE_test() {
 	char c1[] = "Bonjour, comment vas-tu ?";
 	void * c2 = NULL;
 
@@ -24,39 +25,6 @@ int copierCharEtoile_test() {
 	PRINT_T_OK();
 
 	libererSimple((void **) &c2);
-
-	return 0;
-}
-
-int copierCharEtoileArray_test() {
-	int i;
-	xEArray * cEA1 = NULL;
-	xEArray * cEA2 = NULL;
-
-	char c1[] = "Coucou";
-	char c2[] = "Salut, comment vas-tu ?";
-	char c3[] = "Bonjour";
-
-	cEA1 = (xEArray *) malloc(sizeof (xEArray));
-	cEA1->nbChs = 3;
-	cEA1->chs = (char **) malloc((sizeof (char *)) * cEA1->nbChs);
-	copierCharE((void *) c1, (void **) &(cEA1->chs[0]));
-	copierCharE((void *) c2, (void **) &(cEA1->chs[1]));
-	copierCharE((void *) c3, (void **) &(cEA1->chs[2]));
-
-	copierXEArray((void *) cEA1, (void **) &(cEA2));
-
-	PRINT_T(1);
-	for (i = 0; i < cEA1->nbChs; i++) {
-		if (strcmp(cEA1->chs[i], cEA2->chs[i]) != 0) {
-			PRINT_T_ERROR();
-			return 1;
-		}
-	}
-	PRINT_T_OK();
-
-	libererXEArray((void **) &cEA1);
-	libererXEArray((void **) &cEA2);
 
 	return 0;
 }
@@ -81,17 +49,13 @@ int removeHeadAndTailChar_test() {
 }
 
 int main(void) {
-	printf("copierCharEtoile_test() : \n");
-	if (copierCharEtoile_test() == 0) {
-		printf("OK !\n");
-	}
-	printf("copierCharEtoileArray_test() : \n");
-	if (copierCharEtoileArray_test() == 0) {
-		printf("OK !\n");
+	printf("copierCharE_test() : \n");
+	if (copierCharE_test() == 0) {
+		PRINT_OK();
 	}
 	printf("removeHeadAndTailChar_test() : \n");
 	if (removeHeadAndTailChar_test() == 0) {
-		printf("OK !\n");
+		PRINT_OK();
 	}
 
 	return 0;

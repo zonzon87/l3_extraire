@@ -24,49 +24,6 @@ void copierCharE(const void * valeur, void ** lieu) {
 }
 
 /* Vérifié. */
-void creerXEArray(xEArray ** cEA, int nbElements) {
-	int i;
-
-	(* cEA) = (xEArray *) malloc(sizeof (xEArray));
-	(* cEA)->nbChs = nbElements;
-	(* cEA)->chs = (char **) malloc((sizeof (char *)) * nbElements);
-	for (i = 0; i < nbElements; i++) {
-		(* cEA)->chs[i] = NULL;
-	}
-}
-
-/* Vérifié. */
-void copierXEArray(const void * valeur, void ** lieu) {
-	int i;
-	xEArray * cEAIn = NULL;
-	xEArray * cEAOut = NULL;
-
-	cEAIn = (xEArray *) valeur;
-	creerXEArray(&cEAOut, cEAIn->nbChs);
-	for (i = 0; i < cEAOut->nbChs; i++) {
-		copierCharE((void *) cEAIn->chs[i], (void **) &(cEAOut->chs[i]));
-	}
-	(* lieu) = cEAOut;
-}
-
-/* Vérifié. */
-void libererXEArray(void ** lieu) {
-	if ((* lieu) != NULL) {
-		{
-			int i;
-			xEArray * cEA = NULL;
-
-			cEA = (xEArray *) (* lieu);
-			for (i = 0; i < cEA->nbChs; i++) {
-				libererSimple((void **) &(cEA->chs[i]));
-			}
-			libererSimple((void **) &(cEA->chs));
-			libererSimple((void **) &(cEA));
-		}
-	}
-}
-
-/* Vérifié. */
 int isInVAList(char c, int argc, ...) {
 	int i;
 	va_list argList;
