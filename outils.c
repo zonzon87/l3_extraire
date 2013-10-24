@@ -15,16 +15,24 @@ void copierCharEtoile(const void * valeur, void ** lieu) {
 	strcpy((* lieu), valeur);
 }
 
+void creerCharEtoileArray(charEtoileArray ** cEA, int nbElements) {
+	int i;
+
+	(* cEA) = (charEtoileArray *) malloc(sizeof (charEtoileArray));
+	(* cEA)->nbChs = nbElements;
+	(* cEA)->chs = (char **) malloc((sizeof (char *)) * nbElements);
+	for (i = 0; i < nbElements; i++) {
+		(* cEA)->chs[i] = NULL;
+	}
+}
+
 void copierCharEtoileArray(const void * valeur, void ** lieu) {
 	int i;
 	charEtoileArray * cEAIn = NULL;
 	charEtoileArray * cEAOut = NULL;
 
 	cEAIn = (charEtoileArray *) valeur;
-	cEAOut = (charEtoileArray *) malloc(sizeof (charEtoileArray));
-	cEAOut->nbChs = cEAIn->nbChs;
-	cEAOut->chs = (char **) malloc((sizeof (char *)) * cEAOut->nbChs);
-
+	creerCharEtoileArray(&cEAOut, cEAIn->nbChs);
 	for (i = 0; i < cEAOut->nbChs; i++) {
 		copierCharEtoile((void *) cEAIn->chs[i], (void **) &(cEAOut->chs[i]));
 	}

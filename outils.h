@@ -22,6 +22,8 @@ extern void libererSimple(void ** lieu);
 
 extern void copierCharEtoile(const void * valeur, void ** lieu);
 
+extern void creerCharEtoileArray(charEtoileArray ** cEA, int nbElements);
+
 extern void copierCharEtoileArray(const void * valeur, void ** lieu);
 
 extern void libererCharEtoileArray(void ** lieu);

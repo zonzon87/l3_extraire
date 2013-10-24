@@ -48,68 +48,111 @@ int getLine(char ** line, FILE * fichier) {
 	return 0;
 }
 
-int countNumberOfChamps(char * ch) {
 /* Attention strtok() pourrit la chaîne passée en paramètre. */
+int countNumberOfChamps(const char * ch, const char * delimitor) {
 	int count = 0;
-	char * copy;
-	char * token;
+	char * copy = NULL;
+	char * token = NULL;
 
-	copierCharEtoile(ch, (void **) &copy);
+	copierCharEtoile((void *) ch, (void **) &copy);
 
-	token = strtok(ch, TOKENDELIMITOR);
+	token = strtok(copy, delimitor);
 	while (token != NULL) {
 		count++;
-		token = strtok (NULL, TOKENDELIMITOR);
+		token = strtok(NULL, delimitor);
 	}
 
 	return count;
 }
 
-int divideCharEtoiletoCharEtoileArray(char ** dest, int nbElements, char * src) {
+int divideCharEtoiletoCharEtoileArray(charEtoileArray ** dest, int nbElements, const char * delimitor, char * src) {
+	int i = 0;
+	char * token = NULL;
+	charEtoileArray * cEA = NULL;
+
+	creerCharEtoileArray(&cEA, nbElements);
+
+	token = strtok(src, delimitor);
+	while (token != NULL) {
+		if (i < nbElements) { 
+			copierCharEtoile((void *) token, (void **) &(cEA->chs[i]));
+			removeHeadAndTailChar(&(cEA->chs[i]), TOKENGARBAGE);
+		} else {
+			libererCharEtoileArray((void **) &cEA);
+			return ERROR_MALFORMEDFILE;
+		}
+		i++;
+		token = strtok(NULL, delimitor);
+	}
+
+	if (i != nbElements) {
+		libererCharEtoileArray((void **) &cEA);
+		return ERROR_MALFORMEDFILE;
+	}
+
+	(* dest) = cEA;
 
 	return 0;
 }
 
-int copyTo() {
+int rearrangeTableRows(charEtoileArray ** cEAOut, charEtoileArray * cEAIn, file_parcours * values, int nbValues) {
 
 	return 0;
 }
 
-int createTable(table ** tab, char * fileName, ordreApparition * ord) {
+int createTable(table ** tab, const char * fileName, file ordreApparitions, int maxValue) {
 	FILE * fichier = NULL;
 
 	fichier = fopen(fileName, "r");
 
 	if (fichier != NULL) {
 		int nbChamps;
+		int result;
 		int lastLine = 0;
 		char * line = NULL;
-		char ** tabChampsIn;
-		char ** tabChampsOut;
+		charEtoileArray * tabChampsIn = NULL;
+		charEtoileArray * tabChampsOut = NULL;
 
 		(* tab) = (table *) malloc(sizeof (table));
 		file_creer(&((* tab)->lines), &copierCharEtoileArray, &libererCharEtoileArray);
 
-		/* TC */
-		lastLine = getLine(&line, fichier);
-		nbChamps = countNumberOfChamps(line);
-		/* TC */
-		if (nbChamps < (ord->maxValue)) {
-			P_ERROR_INEXISTANTCHAMP(fileName, ord->maxValue);
-
-			destroyTable(tab);
-			libererSimple((void **) &line);
-
-			return ERROR_INEXISTANTCHAMP;
-		}
-		divideCharEtoiletoCharEtoileArray((char **) &tabChampsIn, nbChamps, line);
-		libererSimple((void **) &line);
-		
-		/* TC */
-		while (lastLine != LINE_EOF) {
+		/* Si il y au moins un champ à extraire. */
+		if (file_taille(ordreApparitions) > 0) {
+			/* TC */
 			lastLine = getLine(&line, fichier);
+			nbChamps = countNumberOfChamps(line, TOKENDELIMITOR);
+			/* TC */
+			if (nbChamps < (maxValue)) {
+				P_ERROR_INEXISTANTCHAMP(fileName, maxValue);
 
+				destroyTable(tab);
+				libererSimple((void **) &line);
+
+				return ERROR_INEXISTANTCHAMP;
+			}
+			result = divideCharEtoiletoCharEtoileArray(&tabChampsIn, nbChamps, TOKENDELIMITOR, line);
 			libererSimple((void **) &line);
+			if (result != 0) {
+				if (result == ERROR_MALFORMEDFILE) {
+					P_ERROR_MALFORMEDFILE(fileName);
+				}
+
+				return result;
+			}
+
+			/* Modif vers tabChampsOut */
+			/* free tabChampsIn */
+			/* ajout à tab */
+			/* free tabChampsOut */
+
+			/* TC */
+			while (lastLine != LINE_EOF) {
+				lastLine = getLine(&line, fichier);
+
+				/* A COMPLETER */
+
+				libererSimple((void **) &line);
+			}
 		}
 
 
