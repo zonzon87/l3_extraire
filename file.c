@@ -142,12 +142,8 @@ void file_parcours_detruire(file_parcours * iterate) {
 }
 
 void file_parcours_suivant(file_parcours iterate, void ** lieu) {
-	if (file_parcours_est_fini(iterate) == 0) {
 		(* (iterate->list->copier))(iterate->pointerMaillon->data, lieu);
 		iterate->pointerMaillon = iterate->pointerMaillon->next;
-	} else {
-		(* lieu) = NULL;
-	}
 }
 
 int file_parcours_est_fini(file_parcours iterate) {

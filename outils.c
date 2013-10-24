@@ -5,16 +5,25 @@
 #include "outils.h"
 
 
+/* Vérifié. */
 void libererSimple(void ** lieu) {
 	free(* lieu);
 	(* lieu) = NULL;
 }
 
+/* Vérifié. */
+void copierIntEtoile(const void * valeur, void ** lieu) {
+	(* lieu) = (void *) malloc (sizeof (int));
+	(** ((int **) lieu)) = (* ((int *) valeur));
+}
+
+/* Vérifié */
 void copierCharEtoile(const void * valeur, void ** lieu) {
 	(* lieu) = (char *) malloc((sizeof (char)) * (strlen((char *) valeur) + 1));
 	strcpy((* lieu), valeur);
 }
 
+/* Vérifié. */
 void creerCharEtoileArray(charEtoileArray ** cEA, int nbElements) {
 	int i;
 
@@ -26,6 +35,7 @@ void creerCharEtoileArray(charEtoileArray ** cEA, int nbElements) {
 	}
 }
 
+/* Vérifié. */
 void copierCharEtoileArray(const void * valeur, void ** lieu) {
 	int i;
 	charEtoileArray * cEAIn = NULL;
@@ -39,6 +49,7 @@ void copierCharEtoileArray(const void * valeur, void ** lieu) {
 	(* lieu) = cEAOut;
 }
 
+/* Vérifié. */
 void libererCharEtoileArray(void ** lieu) {
 	if ((* lieu) != NULL) {
 		{
@@ -55,6 +66,7 @@ void libererCharEtoileArray(void ** lieu) {
 	}
 }
 
+/* Vérifié. */
 int isInVAList(char c, int argc, ...) {
 	int i;
 	va_list argList;
@@ -72,12 +84,13 @@ int isInVAList(char c, int argc, ...) {
 	return 1;
 }
 
-int isNumeric(const char * ch, const int strLength) {
+/* Vérifié. */
+int isNumeric(const char * str, const int strLength) {
 	int i;
 	int temp;
 
 	for (i = 0; i < strLength; i++) {
-		temp = (int) ch[i];
+		temp = (int) str[i];
 		if ((temp < 48) || (temp > 57)) { /* Si le caractère n'est pas compris entre '0' et '9' inclus, bref : n'est pas un chiffre. */
 			return 1;
 		}
@@ -86,16 +99,54 @@ int isNumeric(const char * ch, const int strLength) {
 	return 0;
 }
 
-void removeHeadAndTailChar(char ** ch, char c) {
+/* Vérifié. */
+int getLine(char ** line, FILE * fichier) {
+	int bufferLength = 0;
+	int bufferCount = 0;
+	int length = 0;
+	char c = '\0';
+	char * buffer = NULL;
+
+	while ((c != '\r') && (c != '\n') && (c != EOF)) {
+		if(bufferCount == bufferLength) {
+			bufferCount = 0;
+			bufferLength += TABLE_BUFFER;
+			buffer = (char *) realloc(buffer, bufferLength);
+		}
+		c = getc(fichier);
+		buffer[length] = c;
+		length++;
+		bufferCount++;
+	}
+	if (c == '\r') {
+		c = getc(fichier);
+		if (c != '\n') {
+			fseek(fichier, -1, SEEK_CUR);
+		}
+	}
+	buffer[length - 1] = '\0';
+
+	(* line) = buffer;
+
+	if (c == EOF) {
+		return LINE_EOF;
+	}
+	return 0;
+}
+
+/* Vérifié. */
+void removeHeadAndTailChar(char ** str, char c) {
 	int i;
+	int length = (int) strlen(* str);
 	int start = - 1;
 	int end = - 1;
 	char * newCh = NULL;
 
-	for (i = 0; i < (int) strlen(* ch); i++) {
-		if ((* ch)[i] != c) {
+	for (i = 0; i < length; i++) {
+		if ((* str)[i] != c) {
 			if (start < 0) {
 				start = i;
+				end = start;
 			} else {
 				end = i;
 			}
@@ -106,7 +157,7 @@ void removeHeadAndTailChar(char ** ch, char c) {
 			int length = end - start + 1;
 
 			newCh = (char *) malloc((sizeof (char)) * (length + 1));
-			memcpy(newCh, (* ch) + start, (sizeof (char)) * length);
+			memcpy(newCh, (* str) + start, (sizeof (char)) * length);
 			newCh[length] = '\0';
 		}
 	} else {
@@ -114,6 +165,6 @@ void removeHeadAndTailChar(char ** ch, char c) {
 		newCh[0] = '\0';
 	}
 
-	libererSimple((void **) ch);
-	(* ch) = newCh;
+	libererSimple((void **) str);
+	(* str) = newCh;
 }

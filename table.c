@@ -6,6 +6,7 @@
 #include "outils.h"
 
 
+/* Vérifié. */
 void destroyTable(table ** tab) {
 	if ((* tab) != NULL) {
 		file_detruire(&((* tab)->lines));
@@ -13,58 +14,25 @@ void destroyTable(table ** tab) {
 	}
 }
 
-/* truc bizarre si mac os dernière ligne vide est ignorée. */
-int getLine(char ** line, FILE * fichier) {
-	int bufferLength = 0;
-	int bufferCount = 0;
-	int length = 0;
-	char c = '\0';
-	char * buffer = NULL;
-
-	while ((c != '\r') && (c != '\n') && (c != EOF)) {
-		if(bufferCount == bufferLength) {
-			bufferCount = 0;
-			bufferLength += TABLE_BUFFER;
-			buffer = (char *) realloc(buffer, bufferLength);
-		}
-		c = getc(fichier);
-		buffer[length] = c;
-		length++;
-		bufferCount++;
-	}
-	if (c == '\r') {
-		c = getc(fichier);
-		if (c != '\n') {
-			fseek(fichier, -1, SEEK_CUR);
-		}
-	}
-	buffer[length - 1] = '\0';
-
-	(* line) = buffer;
-
-	if (c == EOF) {
-		return LINE_EOF;
-	}
-	return 0;
-}
-
-/* Attention strtok() pourrit la chaîne passée en paramètre. */
-int countNumberOfChamps(const char * ch, const char * delimitor) {
-	int count = 0;
+/* Vérifié. */
+int countNumberOfChamps(const char * str, const char * delimitor) {
+	int i = 0;
 	char * copy = NULL;
 	char * token = NULL;
 
-	copierCharEtoile((void *) ch, (void **) &copy);
+	/* strtok() peut modifier bizarrement la chaîne passée en paramètre. */
+	copierCharEtoile((void *) str, (void **) &copy);
 
 	token = strtok(copy, delimitor);
 	while (token != NULL) {
-		count++;
+		i++;
 		token = strtok(NULL, delimitor);
 	}
 
-	return count;
+	return i;
 }
 
+/* Vérifié. */
 int divideCharEtoiletoCharEtoileArray(charEtoileArray ** dest, int nbElements, const char * delimitor, char * src) {
 	int i = 0;
 	char * token = NULL;
@@ -95,11 +63,23 @@ int divideCharEtoiletoCharEtoileArray(charEtoileArray ** dest, int nbElements, c
 	return 0;
 }
 
-int rearrangeTableRows(charEtoileArray ** cEAOut, charEtoileArray * cEAIn, file_parcours * values, int nbValues) {
+/* Vérifié. */
+int rearrangeLineRows(charEtoileArray ** cEAOut, charEtoileArray * cEAIn, file_parcours values, int nbValues) {
+	int i = 0;
+	int * value;
+
+	creerCharEtoileArray(cEAOut, nbValues);
+	while (!file_parcours_est_fini(values)) {
+		file_parcours_suivant(values, (void **) &value);
+		copierCharEtoile((void *) (cEAIn->chs[* value]), (void **) &((* cEAOut)->chs[i]));
+		libererSimple((void **) &value);
+		i++;
+	}
 
 	return 0;
 }
 
+/* À vérifier. */
 int createTable(table ** tab, const char * fileName, file ordreApparitions, int maxValue) {
 	FILE * fichier = NULL;
 
@@ -110,8 +90,9 @@ int createTable(table ** tab, const char * fileName, file ordreApparitions, int 
 		int result;
 		int lastLine = 0;
 		char * line = NULL;
-		charEtoileArray * tabChampsIn = NULL;
-		charEtoileArray * tabChampsOut = NULL;
+		file_parcours values = NULL;
+		charEtoileArray * cEAIn = NULL;
+		charEtoileArray * cEAOut = NULL;
 
 		(* tab) = (table *) malloc(sizeof (table));
 		file_creer(&((* tab)->lines), &copierCharEtoileArray, &libererCharEtoileArray);
@@ -121,40 +102,41 @@ int createTable(table ** tab, const char * fileName, file ordreApparitions, int 
 			/* TC */
 			lastLine = getLine(&line, fichier);
 			nbChamps = countNumberOfChamps(line, TOKENDELIMITOR);
-			/* TC */
 			if (nbChamps < (maxValue)) {
 				P_ERROR_INEXISTANTCHAMP(fileName, maxValue);
 
 				destroyTable(tab);
 				libererSimple((void **) &line);
-
+				fclose(fichier);
 				return ERROR_INEXISTANTCHAMP;
 			}
-			result = divideCharEtoiletoCharEtoileArray(&tabChampsIn, nbChamps, TOKENDELIMITOR, line);
-			libererSimple((void **) &line);
-			if (result != 0) {
-				if (result == ERROR_MALFORMEDFILE) {
-					P_ERROR_MALFORMEDFILE(fileName);
-				}
-
-				return result;
-			}
-
-			/* Modif vers tabChampsOut */
-			/* free tabChampsIn */
-			/* ajout à tab */
-			/* free tabChampsOut */
 
 			/* TC */
+			rewind(fichier);
 			while (lastLine != LINE_EOF) {
 				lastLine = getLine(&line, fichier);
 
-				/* A COMPLETER */
-
+				result = divideCharEtoiletoCharEtoileArray(&cEAIn, nbChamps, TOKENDELIMITOR, line);
 				libererSimple((void **) &line);
+
+				if (result != 0) {
+					if (result == ERROR_MALFORMEDFILE) {
+						P_ERROR_MALFORMEDFILE(fileName);
+					}
+
+					destroyTable(tab);
+					libererCharEtoileArray((void **) &cEAIn);
+					fclose(fichier);
+					return result;
+				}
+
+				values = file_parcours_creer(ordreApparitions);
+				rearrangeLineRows(&cEAOut, cEAIn, values, file_taille(ordreApparitions));
+				file_parcours_detruire(&values);
+				file_ajouter((* tab)->lines, cEAOut);
+				libererCharEtoileArray((void **) &cEAOut);
 			}
 		}
-
 
 		fclose(fichier);
 	} else {

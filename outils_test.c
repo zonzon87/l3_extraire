@@ -61,6 +61,32 @@ int copierCharEtoileArray_test() {
 	return 0;
 }
 
+int getLine_test(char * fileName) {
+	int lastLine = 0;
+	FILE * fichier = NULL;
+	char * ch = NULL;
+
+	fichier = fopen(fileName, "r");
+
+	if (fichier != NULL)
+	{
+		printf("%s:\n", fileName);
+		while (lastLine != LINE_EOF) {
+			lastLine = getLine(&ch, fichier);
+			printf("%s\n", ch);
+			libererSimple((void **) &ch);
+		}
+
+		fclose(fichier);
+	} else {
+		P_ERROR_MISSINGFILE(fileName);
+
+		return 1;
+	}
+
+	return 0;
+}
+
 int removeHeadAndTailChar_test() {
 	char c1[] = "---Bonjour, comment vas-tu ?-------";
 	char * c2;
@@ -89,9 +115,14 @@ int main(void) {
 	if (copierCharEtoileArray_test() == 0) {
 		printf("OK !\n");
 	}
+	printf("getLine_test() : \n");
+	if (getLine_test("Donnees/repas.table") == 0) {
+		printf("Fichier lu, vérifier les données manuellement!\n");
+	}
 	printf("removeHeadAndTailChar_test() : \n");
 	if (removeHeadAndTailChar_test() == 0) {
 		printf("OK !\n");
 	}
+	
 	return 0;
 }
