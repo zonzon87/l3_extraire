@@ -15,15 +15,11 @@ void destroyTable(table ** tab) {
 }
 
 /* Vérifié. */
-int countNumberOfChamps(const char * str, const char * delimitor) {
+int countNumberOfChamps(char * str, const char * delimitor) {
 	int i = 0;
-	char * copy = NULL;
 	char * token = NULL;
 
-	/* strtok() peut modifier bizarrement la chaîne passée en paramètre. */
-	copierCharEtoile((void *) str, (void **) &copy);
-
-	token = strtok(copy, delimitor);
+	token = strtok(str, delimitor);
 	while (token != NULL) {
 		i++;
 		token = strtok(NULL, delimitor);
@@ -102,11 +98,11 @@ int createTable(table ** tab, const char * fileName, file ordreApparitions, int 
 			/* TC */
 			lastLine = getLine(&line, fichier);
 			nbChamps = countNumberOfChamps(line, TOKENDELIMITOR);
+			libererSimple((void **) &line);
 			if (nbChamps < (maxValue)) {
 				P_ERROR_INEXISTANTCHAMP(fileName, maxValue);
 
 				destroyTable(tab);
-				libererSimple((void **) &line);
 				fclose(fichier);
 				return ERROR_INEXISTANTCHAMP;
 			}
@@ -115,7 +111,6 @@ int createTable(table ** tab, const char * fileName, file ordreApparitions, int 
 			rewind(fichier);
 			while (lastLine != LINE_EOF) {
 				lastLine = getLine(&line, fichier);
-
 				result = divideCharEtoiletoCharEtoileArray(&cEAIn, nbChamps, TOKENDELIMITOR, line);
 				libererSimple((void **) &line);
 
@@ -148,7 +143,8 @@ int createTable(table ** tab, const char * fileName, file ordreApparitions, int 
 	return 0;
 }
 
-int createTables(file * tables, requete * reqIn, requete ** reqOut) {
+int createTables(table ** tables, requete * reqIn, requete ** reqOut) {
+
 
 	return 0;
 }

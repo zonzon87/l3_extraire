@@ -16,14 +16,14 @@
 
 
 typedef struct table {
-	int nbLines;
+	int nbRows;
 	file lines;
 } table;
 
 
 extern void destroyTable(table ** tab);
 
-extern int countNumberOfChamps(const char * ch, const char * delimitor);
+extern int countNumberOfChamps(char * str, const char * delimitor);
 
 extern int divideCharEtoiletoCharEtoileArray(charEtoileArray ** dest, int nbElements, const char * delimitor, char * src);
 
@@ -31,7 +31,7 @@ extern int rearrangeLineRows(charEtoileArray ** cEAOut, charEtoileArray * cEAIn,
 
 extern int createTable(table ** tab, const char * fileName, file ordreApparitions, int maxValue);
 
-extern int createTables(file * tables, requete * reqIn, requete ** reqOut);
+extern int createTables(table ** tables, requete * reqIn, requete ** reqOut);
 
 
 #endif
