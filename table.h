@@ -13,7 +13,7 @@
 #define ERROR_MISSINGFILE 1
 #define P_ERROR_MISSINGFILE(x) printf("Fichier inexistant : %s\n", x)
 #define ERROR_INEXISTANTCHAMP 2
-#define P_ERROR_INEXISTANTCHAMP(x, y) printf("Erreur demande d'une colonne inexistante d'un fichier : %s.%d\n", x, y)
+#define P_ERROR_INEXISTANTCHAMP(x, y) printf("Erreur demande d'une colonne inexistante d'un fichier : %s >%d\n", x, y)
 #define ERROR_MALFORMEDFILE 3
 #define P_ERROR_MALFORMEDFILE(x) printf("Fichier malformé : %s\n", x)
 
@@ -46,9 +46,11 @@ extern int divideCharEToCharEArray(xEArray ** dest, int nbElements, const char *
 
 extern int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, file_parcours values, int nbValues);
 
-extern int createTable(table ** tab, const char * fileName, file ordreApparitions, int maxValue);
+extern int createTable(table ** tab, const char * fileName, file ordreApparitions);
 
-extern int createTables(table ** tables, file * tabFChamps, int nbFichiers);
+extern int createTables(file ** tables, file nomsTables, file * tabFChamps);
+
+extern void tableToPrint(table * tab);
 
 
 #endif

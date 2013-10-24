@@ -143,7 +143,7 @@ int parseSyntaxCondition_test() {
 	return returnValue;
 }
 
-int createRequete_test() {
+int initRequete_test() {
 	int i;
 	int returnValue = 0;
 	requete * req = NULL;
@@ -215,7 +215,7 @@ int createRequete_test() {
 	for (i = 0; i < 5; i++) {
 		PRINT_T(i + 1);
 		if	(
-			(createRequete(&req, atoi(cOut[i][0]), cIn[i]) != 0) ||
+			(initRequete(&req, atoi(cOut[i][0]), cIn[i]) != 0) ||
 			(file_taille(req->champsSortie) != atoi(cOut[i][1])) ||
 			(file_taille(req->nomsTables) != atoi(cOut[i][2])) ||
 			(file_taille(req->conditions) != atoi(cOut[i][3])) ||
@@ -231,7 +231,7 @@ int createRequete_test() {
 	}
 	for (i = 5; i < 14; i++) {
 		PRINT_T(i + 1);
-		if (createRequete(&req, atoi(cOut[i][0]), cIn[i]) == 0) {
+		if (initRequete(&req, atoi(cOut[i][0]), cIn[i]) == 0) {
 			PRINT_T_ERROR();
 			returnValue = 1;
 		} else {
@@ -252,8 +252,8 @@ int main(void) {
 	if (parseSyntaxCondition_test() == 0) {
 		PRINT_OK();
 	}
-	printf("createRequete_test() : \n");
-	if (createRequete_test() == 0) {
+	printf("initRequete_test() : \n");
+	if (initRequete_test() == 0) {
 		PRINT_OK();
 	}
 

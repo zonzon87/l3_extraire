@@ -103,6 +103,12 @@ int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, file_parcours values, 
 	creerXEArray(cEAOut, nbValues, &copierCharE, &libererSimple);
 	while (!file_parcours_est_fini(values)) {
 		file_parcours_suivant(values, (void **) &value);
+		if (((* value) + 1) > cEAIn->nbElements) {
+
+            libererSimple((void **) &value);
+		    libererXEArray((void **) cEAOut);
+            return ERROR_INEXISTANTCHAMP;
+        }
 		ajouterXEArray(* cEAOut, i, accesXEArray(cEAIn, * value));
 		libererSimple((void **) &value);
 		i++;
@@ -112,7 +118,7 @@ int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, file_parcours values, 
 }
 
 /* À vérifier. */
-int createTable(table ** tab, const char * fileName, file ordreApparitions, int maxValue) {
+int createTable(table ** tab, const char * fileName, file ordreApparitions) {
 	FILE * fichier = NULL;
 
 	fichier = fopen(fileName, "r");
@@ -135,13 +141,7 @@ int createTable(table ** tab, const char * fileName, file ordreApparitions, int 
 			lastLine = getLine(&line, fichier);
 			nbChamps = countNumberOfChamps(line, TOKENDELIMITOR);
 			libererSimple((void **) &line);
-			if (nbChamps < (maxValue)) {
-				P_ERROR_INEXISTANTCHAMP(fileName, maxValue);
-
-				destroyTable(tab);
-				fclose(fichier);
-				return ERROR_INEXISTANTCHAMP;
-			}
+			(* tab)->nbRows = nbChamps;
 
 			/* TC */
 			rewind(fichier);
@@ -162,10 +162,21 @@ int createTable(table ** tab, const char * fileName, file ordreApparitions, int 
 				}
 
 				values = file_parcours_creer(ordreApparitions);
-				rearrangeLineRows(&cEAOut, cEAIn, values, file_taille(ordreApparitions));
-				file_parcours_detruire(&values);
-				file_ajouter((* tab)->lines, cEAOut);
+				result = rearrangeLineRows(&cEAOut, cEAIn, values, file_taille(ordreApparitions));
+				if (result == 0) {
+                    file_ajouter((* tab)->lines, cEAOut);
+                }
+                file_parcours_detruire(&values);
 				libererXEArray((void **) &cEAOut);
+                if (result != 0) {
+                    if (result == ERROR_INEXISTANTCHAMP) {
+                        P_ERROR_INEXISTANTCHAMP(fileName, cEAIn->nbElements);
+                    }
+                    destroyTable(tab);
+                    fclose(fichier);
+                    return result;
+                }
+                libererXEArray((void **) &cEAIn);
 			}
 		}
 
@@ -179,8 +190,12 @@ int createTable(table ** tab, const char * fileName, file ordreApparitions, int 
 	return 0;
 }
 
-int createTables(table ** tables, file * tabFChamps, int nbFichiers) {
+int createTables(file ** tables, file nomsTables, file * tabFChamps) {
 
-	
+
 	return 0;
+}
+
+void tableToPrint(table * tab) {
+
 }

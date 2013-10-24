@@ -36,6 +36,7 @@ typedef struct requete {
 	file conditions;
 	char option;
 	champ * champOrdre;
+	file * tabFChamps;
 } requete;
 
 
@@ -57,9 +58,14 @@ extern int parseSyntaxChamp(champ ** ch, const char separatorChamp, const char *
 
 extern int parseSyntaxCondition(condition ** co, const char separatorChamp, const char * str);
 
+extern int initRequete(requete ** req, const int argc, const char * argv[]);
+
+extern int searchRowInFile(file f, int row);
+
+extern void completeChamps(file * champs, champ * ch);
+
+extern void optimizeRequete(const requete * reqInit, requete ** reqOpt);
+
 extern int createRequete(requete ** req, const int argc, const char * argv[]);
-
-extern int optimizeRequete(const requete * reqInit, requete ** reqOpt, file ** champs);
-
 
 #endif

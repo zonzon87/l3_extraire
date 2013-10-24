@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
 
 #include "test.h"
 #include "earray.h"
@@ -16,16 +16,16 @@ int copierXEArray_test() {
 	char c3[] = "Bonjour";
 
 	creerXEArray(&cEA1, 3, &copierCharE, &libererSimple);
-	(* (cEA1->copier))((void *) c1, (void **) &(cEA1->chs[0]));
+	(* (cEA1->copier))((void *) c1, (void **) &(cEA1->elements[0]));
 	ajouterXEArray(cEA1, 1, (void *) c1);
 	ajouterXEArray(cEA1, 1, (void *) c2);
-	(* (cEA1->copier))((void *) c3, (void **) &(cEA1->chs[2]));
+	(* (cEA1->copier))((void *) c3, (void **) &(cEA1->elements[2]));
 
 	copierXEArray((void *) cEA1, (void **) &(cEA2));
 
 	PRINT_T(1);
-	for (i = 0; i < cEA1->nbChs; i++) {
-		if (strcmp(cEA1->chs[i], cEA2->chs[i]) != 0) {
+	for (i = 0; i < cEA1->nbElements; i++) {
+		if (strcmp(cEA1->elements[i], cEA2->elements[i]) != 0) {
 			PRINT_T_ERROR();
 			return 1;
 		}
