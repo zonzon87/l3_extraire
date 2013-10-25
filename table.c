@@ -129,7 +129,7 @@ int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, const file_parcours va
 			libererXEArray((void **) cEAOut);
 			return ERROR_INEXISTANTCHAMP;
 		}
-		/*ajouterXEArray(* cEAOut, i, accesXEArray(cEAIn, * value));*/
+		ajouterXEArray(* cEAOut, i, accesXEArray(cEAIn, * value));
 		libererSimple((void **) &value);
 		i++;
 	}

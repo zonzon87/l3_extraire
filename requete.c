@@ -477,10 +477,9 @@ void completeChamps(file * champs, champ * ch) {
     int a;
     int result;
 
-    a = (ch->row) - 1;
-    result = searchRowInFile(champs[ch->table], a);
+    result = searchRowInFile(champs[ch->table], ch->row);
     if (result < 0) {
-        file_ajouter(champs[ch->table], &a);
+        file_ajouter(champs[ch->table], &(ch->row));
         ch->row = file_taille(champs[ch->table]);
     } else {
         ch->row = result;

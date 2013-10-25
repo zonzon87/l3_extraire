@@ -151,35 +151,35 @@ int initRequete_test() {
 	requete * req = NULL;
 
 	/* Les tests suivants doivent être corrects. */
-	const char * c1In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1"};
+	const char * c1In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "a.1=b.1"};
 	const char * c1Out[] = {"10", "4", "2", "1", " "};
-	const char * c2In[] = {"./extraire", "a.1", "b.1", "a.2", "c.2", "d.8", "b.3", "de", "sport.table", "repas.table", "jeu.table", "compte.table", "avec", "a.1=b.1"};
+	const char * c2In[] = {"./extraire", "a.1", "b.1", "a.2", "c.2", "d.8", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "jeu.table", "compte.table", "avec", "a.1=b.1"};
 	const char * c2Out[] = {"14", "6", "4" ,"1", " "};
-	const char * c3In[] = {"./extraire", "a.1", "b.1", "a.1", "a.2", "b.3", "de", "sport.table", "repas.table", "jeu.table", "compte.table", "avec", "a.1=c.1", "a.3<.d.2", "[unique]"};
+	const char * c3In[] = {"./extraire", "a.1", "b.1", "a.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "jeu.table", "compte.table", "avec", "a.1=c.1", "a.3<.d.2", "[unique]"};
 	const char * c3Out[] = {"15", "5", "4", "2", "u"};
-	const char * c4In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1", "a.3>=b.2", "ordre", "b.1"};
+	const char * c4In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "a.1=b.1", "a.3>=b.2", "ordre", "b.1"};
 	const char * c4Out[] = {"13", "4", "2", "2", "o"};
-	const char * c5In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1", "a.3>=b.2", "ordre", "a.1"};
+	const char * c5In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "a.1=b.1", "a.3>=b.2", "ordre", "a.1"};
 	const char * c5Out[] = {"13", "4", "2", "2", "o"};
 
 	/* Les tests suivants doivent être incorrects. */
-	const char * c6In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec"};
+	const char * c6In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec"};
 	const char * c6Out[] = {"9"};
-	const char * c7In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "avec", "a.1=b.1"};
+	const char * c7In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "avec", "a.1=b.1"};
 	const char * c7Out[] = {"9"};
-	const char * c8In[] = {"./extraire", "de", "sport.table", "de", "repas.table", "avec", "a.1=b.1"};
+	const char * c8In[] = {"./extraire", "de", "Donnees/sport.table", "de", "Donnees/repas.table", "avec", "a.1=b.1"};
 	const char * c8Out[] = {"7"};
-	const char * c9In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "c.1=b.1"};
+	const char * c9In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "c.1=b.1"};
 	const char * c9Out[] = {"10"};
-	const char * c10In[] = {"./extraire", "c.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1"};
+	const char * c10In[] = {"./extraire", "c.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "a.1=b.1"};
 	const char * c10Out[] = {"10"};
-	const char * c11In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1", "a.3>=b.2", "ordre", "a.3"};
+	const char * c11In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "a.1=b.1", "a.3>=b.2", "ordre", "a.3"};
 	const char * c11Out[] = {"13"};
-	const char * c12In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1", "[unique]", "ordre", "a.2"};
+	const char * c12In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "a.1=b.1", "[unique]", "ordre", "a.2"};
 	const char * c12Out[] = {"13"};
-	const char * c13In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1", "ordre", "a.1", "b.1"};
+	const char * c13In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "a.1=b.1", "ordre", "a.1", "b.1"};
 	const char * c13Out[] = {"13"};
-	const char * c14In[] = {"./extraire", "a.1", "grand.1", "a.2", "tropgrand.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1"};
+	const char * c14In[] = {"./extraire", "a.1", "grand.1", "a.2", "tropgrand.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "a.1=b.1"};
 	const char * c14Out[] = {"10"};
 
 	const char ** cIn[14];
@@ -250,39 +250,39 @@ void createRequete_test() {
 	requete * req = NULL;
 
 	/* Les tests suivants sont corrects. */
-	const char * c1In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1"};
-	const char * c1Out[] = {"10"};
-	const char * c2In[] = {"./extraire", "a.1", "b.1", "a.2", "c.2", "d.8", "b.3", "de", "sport.table", "repas.table", "jeu.table", "compte.table", "avec", "a.1=b.1"};
-	const char * c2Out[] = {"14"};
-	const char * c3In[] = {"./extraire", "a.1", "b.1", "a.1", "a.2", "b.3", "de", "sport.table", "repas.table", "jeu.table", "compte.table", "avec", "a.1=c.1", "a.3<.d.2", "[unique]"};
-	const char * c3Out[] = {"15"};
-	const char * c4In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1", "a.3>=b.2", "ordre", "b.1"};
-	const char * c4Out[] = {"13"};
-	const char * c5In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1", "a.3>=b.2", "ordre", "a.1"};
-	const char * c5Out[] = {"13"};
+	const char * c1In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "a.1=b.1"};
+	const char * c1Out = {"10"};
+	const char * c2In[] = {"./extraire", "a.1", "b.1", "a.2", "c.2", "d.8", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "jeu.table", "compte.table", "avec", "a.1=b.1"};
+	const char * c2Out = {"14"};
+	const char * c3In[] = {"./extraire", "a.1", "b.1", "a.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "jeu.table", "compte.table", "avec", "a.1=c.1", "a.3<.d.2", "[unique]"};
+	const char * c3Out = {"15"};
+	const char * c4In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "a.1=b.1", "a.3>=b.2", "ordre", "b.1"};
+	const char * c4Out = {"13"};
+	const char * c5In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "a.1=b.1", "a.3>=b.2", "ordre", "a.1"};
+	const char * c5Out = {"13"};
 
     /* Les tests suivants doivent être incorrects. */
-	const char * c6In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec"};
-	const char * c6Out[] = {"9"};
-	const char * c7In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "avec", "a.1=b.1"};
-	const char * c7Out[] = {"9"};
-	const char * c8In[] = {"./extraire", "de", "sport.table", "de", "repas.table", "avec", "a.1=b.1"};
-	const char * c8Out[] = {"7"};
-	const char * c9In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "c.1=b.1"};
-	const char * c9Out[] = {"10"};
-	const char * c10In[] = {"./extraire", "c.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1"};
-	const char * c10Out[] = {"10"};
-	const char * c11In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1", "a.3>=b.2", "ordre", "a.3"};
-	const char * c11Out[] = {"13"};
-	const char * c12In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1", "[unique]", "ordre", "a.2"};
-	const char * c12Out[] = {"13"};
-	const char * c13In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1", "ordre", "a.1", "b.1"};
-	const char * c13Out[] = {"13"};
-	const char * c14In[] = {"./extraire", "a.1", "grand.1", "a.2", "tropgrand.3", "de", "sport.table", "repas.table", "avec", "a.1=b.1"};
-	const char * c14Out[] = {"10"};
+	const char * c6In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec"};
+	const char * c6Out = {"9"};
+	const char * c7In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "avec", "a.1=b.1"};
+	const char * c7Out = {"9"};
+	const char * c8In[] = {"./extraire", "de", "Donnees/sport.table", "de", "Donnees/repas.table", "avec", "a.1=b.1"};
+	const char * c8Out = {"7"};
+	const char * c9In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "c.1=b.1"};
+	const char * c9Out = {"10"};
+	const char * c10In[] = {"./extraire", "c.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "a.1=b.1"};
+	const char * c10Out = {"10"};
+	const char * c11In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "a.1=b.1", "a.3>=b.2", "ordre", "a.3"};
+	const char * c11Out = {"13"};
+	const char * c12In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "a.1=b.1", "[unique]", "ordre", "a.2"};
+	const char * c12Out = {"13"};
+	const char * c13In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "a.1=b.1", "ordre", "a.1", "b.1"};
+	const char * c13Out = {"13"};
+	const char * c14In[] = {"./extraire", "a.1", "grand.1", "a.2", "tropgrand.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "a.1=b.1"};
+	const char * c14Out = {"10"};
 
     const char ** cIn[14];
-	const char ** cOut[14];
+	const char * cOut[14];
 	cIn[0] = c1In;
 	cOut[0] = c1Out;
 	cIn[1] = c2In;
@@ -313,12 +313,12 @@ void createRequete_test() {
 	cOut[13] = c14Out;
 
     for (i = 0; i < 5; i++) {
-		createRequete(&req, atoi(cOut[i][0]), cIn[i]);
+		createRequete(&req, atoi(cOut[i]), cIn[i]);
 		destroyRequete(&req);
 	}
 	printf("### Poubelle ###\n");
 	for (i = 5; i < 14; i++) {
-		createRequete(&req, atoi(cOut[i][0]), cIn[i]);
+		createRequete(&req, atoi(cOut[i]), cIn[i]);
 	}
 	printf("\n### Poubelle ###\n");
 }
