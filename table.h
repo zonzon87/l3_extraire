@@ -51,7 +51,9 @@ extern int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, const file_parc
 
 extern int createTable(table * tab, const char * fileName, const file ordreApparitions);
 
-extern int createTables(void ** tabs, const file nomsTables, const file * tabFChamps);
+extern int createTables(xEArray * tEA, const file nomsTables, const file * tabFChamps);
+
+extern void charEArrayToPrint(xEArray * cEA);
 
 extern void tableToPrint(table * tab);
 

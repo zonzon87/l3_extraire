@@ -4,6 +4,7 @@
 #include "file.h"
 
 
+#define S_CHAMP '.'
 #define S_OF "de"
 #define S_WITH "avec"
 #define S_ORDER "ordre"

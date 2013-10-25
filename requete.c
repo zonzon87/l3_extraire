@@ -267,7 +267,7 @@ int parseSyntaxCondition(condition ** co, const char separatorChamp, const char 
 /* Vérifié. */
 int initRequete(requete ** req, const int argc, const char * argv[]) {
 	/* rappel: argv[0] = #commande d'appel# */
-	const char separatorChamp = '.';
+	static const char separatorChamp = S_CHAMP;
 
 	int i = 1;
 	int ofPosition = -1;
@@ -474,7 +474,6 @@ int searchRowInFile(file f, int row) {
 
 /* Vérifié. */
 void completeChamps(file * champs, champ * ch) {
-    int a;
     int result;
 
     result = searchRowInFile(champs[ch->table], ch->row);

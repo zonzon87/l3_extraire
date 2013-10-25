@@ -244,7 +244,6 @@ int initRequete_test() {
 }
 
 void createRequete_test() {
-	int returnValue = 0;
     int i;
 
 	requete * req = NULL;

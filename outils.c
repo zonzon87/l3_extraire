@@ -60,8 +60,8 @@ int isNumeric(const char * str, const int strLength) {
 void removeHeadAndTailChar(char ** str, char c) {
 	int i;
 	int length = (int) strlen(* str);
-	int start = - 1;
-	int end = - 1;
+	int start = -1;
+	int end = -1;
 	char * newCh = NULL;
 
 	for (i = 0; i < length; i++) {

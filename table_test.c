@@ -37,12 +37,59 @@ int getLine_test(char * fileName) {
 	return 0;
 }
 
+int countNumberOfChamps_test() {
+	int returnValue = 0;
+	int result = 0;
+	const char * delimitor = TOKENDELIMITOR;
+	char stack1[] = "   alice  |  poisson  |     yourt  | ";
+	char stack2[] = "   alice  |  poisson  |     yourt  |";
+	char stack3[] = "   alice  |  poisson  |     yourt  ";
+
+	char * str = NULL;
+
+	PRINT_T(1);
+	copierCharE((void *) stack1, (void **) &str);
+	result = countNumberOfChamps(str, delimitor);
+	if (result != 3) {
+		PRINT_T_ERROR();
+		returnValue = 1;
+	} else {
+		PRINT_T_OK();
+	}
+	libererSimple((void **) &str);
+
+	PRINT_T(2);
+	copierCharE((void *) stack2, (void **) &str);
+	result = countNumberOfChamps(str, delimitor);
+	if (result != 3) {
+		PRINT_T_ERROR();
+		returnValue = 1;
+	} else {
+		PRINT_T_OK();
+	}
+	libererSimple((void **) &str);
+
+	PRINT_T(3);
+	copierCharE((void *) stack3, (void **) &str);
+	result = countNumberOfChamps(str, delimitor);
+	if (result != 3) {
+		PRINT_T_ERROR();
+		returnValue = 1;
+	} else {
+		PRINT_T_OK();
+	}
+	libererSimple((void **) &str);
+
+	return returnValue;
+}
+
 /* Vérifié. */
+/* Doit afficher "alice|poisson|yourt|\n". */
 int divideCharEToCharEArray_test() {
 	int returnValue = 0;
-	const char * delimitor = "|";
-	char stack[] = "alice | poisson | yourt";
 	int result = 0;
+	const char * delimitor = TOKENDELIMITOR;
+	char stack[] = "   alice  |  poisson  |     yourt  | ";
 
 	char * str = NULL;
 	xEArray * cEA = NULL;
@@ -55,6 +102,10 @@ int divideCharEToCharEArray_test() {
 		returnValue = 1;
 	} else {
 		PRINT_T_OK();
+		printf("In  :\t");
+		printf("\"%s\"\n", stack);
+		printf("Out :\t");
+		charEArrayToPrint(cEA);
 	}
 	libererXEArray((void **) &cEA);
 	libererSimple((void **) &str);
@@ -75,7 +126,7 @@ int divideCharEToCharEArray_test() {
 
 int rearrangeLineRows_test() {
 	int returnValue = 0;
-	const char * delimitor = "|";
+	const char * delimitor = TOKENDELIMITOR;
 	char stack[] = "alice | poisson | yourt";
 
 	char * str = NULL;
@@ -92,7 +143,12 @@ int rearrangeLineRows_test() {
 	divideCharEToCharEArray(&cEAIn, 3, delimitor, str);
 	values = file_parcours_creer(req->tabFChamps[1]);
 
+
 	rearrangeLineRows(&cEAOut, cEAIn, values, file_taille(req->tabFChamps[1]));
+	printf("cEAIn  :\t");
+	charEArrayToPrint(cEAIn);
+	printf("cEAOut :\t");
+	charEArrayToPrint(cEAOut);
 	libererXEArray((void **) &cEAOut);
 
 	file_parcours_detruire(&values);
@@ -103,7 +159,7 @@ int rearrangeLineRows_test() {
 	return returnValue;
 }
 
-void createTables_test() {
+/*void createTables_test() {
     int i;
     requete * req;
     table ** tables = NULL;
@@ -122,12 +178,16 @@ void createTables_test() {
 		destroyTables((void **) tables, file_taille(req->nomsTables));
 		destroyRequete(&req);
 	}
-}
+}*/
 
 int main(void) {
 	printf("getLine_test() : \n");
 	if (getLine_test("Donnees/repas.table") == 0) {
 		printf("Fichier lu, vérifier les données manuellement !\n");
+	}
+	printf("countNumberOfChamps_test() : \n");
+	if (countNumberOfChamps_test() == 0) {
+		PRINT_OK();
 	}
 	printf("divideCharEToCharEArray_test() : \n");
 	if (divideCharEToCharEArray_test() == 0) {

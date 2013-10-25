@@ -20,7 +20,11 @@ void creerXEArray(xEArray ** xEA, int nbElements, void (* copier)(const void * v
 
 /* Vérifié. */
 void * accesXEArray(xEArray * xEA, int index) {
-	return xEA->elements[index];
+	if ((index > -1) && (index < xEA->nbElements)) {
+		return xEA->elements[index];
+	} else {
+		return NULL;
+	}
 }
 
 /* Vérifié. */

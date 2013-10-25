@@ -67,21 +67,31 @@ int getLine(char ** line, FILE * fichier) {
 	return 0;
 }
 
-/* Vérifié. */
+/* Testé. */
 int countNumberOfChamps(char * str, const char * delimitor) {
 	int i = 0;
+	char * test = NULL;
 	char * token = NULL;
 
 	token = strtok(str, delimitor);
 	while (token != NULL) {
 		i++;
+		libererSimple((void **) &test);
+		copierCharE((void *) token, (void **) &test);
 		token = strtok(NULL, delimitor);
 	}
+	
+	/* À cause : du cas où la ligne termine par |TOKENGARBAGE */
+	removeHeadAndTailChar(&test, TOKENGARBAGE);
+	if (test[0] == '\0') {
+		i--;
+	}
+	libererSimple((void **) &test);
 
 	return i;
 }
 
-/* Vérifié. */
+/* Testé. */
 int divideCharEToCharEArray(xEArray ** dest, int nbElements, const char * delimitor, char * src) {
 	int i = 0;
 	char * temp = NULL;
@@ -92,10 +102,14 @@ int divideCharEToCharEArray(xEArray ** dest, int nbElements, const char * delimi
 
 	token = strtok(src, delimitor);
 	while (token != NULL) {
-		if (i < nbElements) {
+		if (i < nbElements + 1) { /* + 1 à cause : du cas où la ligne termine par |TOKENGARBAGE */
 			copierCharE((void *) token, (void **) &temp);
 			removeHeadAndTailChar(&temp, TOKENGARBAGE);
-			ajouterXEArray(cEA, i, (void *) temp);
+			if ((i == nbElements) && (temp[0] == '\0')) { /* encore à cause : du cas où la ligne termine par |TOKENGARBAGE */
+				i--;
+			} else {
+				ajouterXEArray(cEA, i, (void *) temp);
+			}
 			libererSimple((void **) &temp);
 		} else {
 			libererXEArray((void **) &cEA);
@@ -115,10 +129,10 @@ int divideCharEToCharEArray(xEArray ** dest, int nbElements, const char * delimi
 	return 0;
 }
 
-/* Vérifié. */
+/* Testé. */
 int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, const file_parcours values, int nbValues) {
 	int i = 0;
-	int * value;
+	int * value = NULL;
 
 	creerXEArray(cEAOut, nbValues, &copierCharE, &libererSimple);
 	while (!file_parcours_est_fini(values)) {
@@ -138,7 +152,7 @@ int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, const file_parcours va
 }
 
 /* À vérifier. */
-int createTable(table * tab, const char * fileName, const file ordreApparitions) {
+int createTable(table /* * */* tab, const char * fileName, const file ordreApparitions) {
 	FILE * fichier = NULL;
 
 	fichier = fopen(fileName, "r");
@@ -207,7 +221,7 @@ int createTable(table * tab, const char * fileName, const file ordreApparitions)
 	return 0;
 }
 
-int createTables(void ** tabs, const file nomsTables, const file * tabFChamps) {
+int createTables(xEArray * tEA, const file nomsTables, const file * tabFChamps) {
 	int i;
 	int nbFichiers;
 	int result;
@@ -222,7 +236,7 @@ int createTables(void ** tabs, const file nomsTables, const file * tabFChamps) {
 	parcours = file_parcours_creer(nomsTables);
 	while (!file_parcours_est_fini(parcours)) {
 		file_parcours_suivant(parcours, (void **) &temp);
-		tabx[i] = (table *) malloc(sizeof (table));
+
 		result = createTable(tabx[i], temp, tabFChamps[i]);
 		libererSimple((void **) &temp);
 		if (result != 0) {
@@ -233,6 +247,15 @@ int createTables(void ** tabs, const file nomsTables, const file * tabFChamps) {
 	file_parcours_detruire(&parcours);
 
 	return 0;
+}
+
+void charEArrayToPrint(xEArray * cEA) {
+	int i;
+
+	for (i = 0; i < cEA->nbElements; i++) {
+		printf("%s|", (char *) accesXEArray(cEA, i));
+	}
+	printf("\n");
 }
 
 void tableToPrint(table * tab) {

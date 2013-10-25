@@ -12,7 +12,6 @@ int copierCharE_test() {
 	void * c2 = NULL;
 
 	copierCharE(c1, &c2);
-
 	PRINT_T(1);
 	if (strcmp(c1, c2) != 0) {
 		PRINT_T_ERROR();
@@ -20,7 +19,6 @@ int copierCharE_test() {
 	} else {
 		PRINT_T_OK();
 	}
-
 	libererSimple((void **) &c2);
 
 	return returnValue;
@@ -29,20 +27,30 @@ int copierCharE_test() {
 int removeHeadAndTailChar_test() {
 	int returnValue = 0;
 	char c1[] = "---Bonjour, comment vas-tu ?-------";
-	char * c2;
+	char c2[] = "-";
+	char * cT;
 
-	copierCharE((void *) c1, (void **) &c2);
-	removeHeadAndTailChar(&c2, '-');
-
+	copierCharE((void *) c1, (void **) &cT);
+	removeHeadAndTailChar(&cT, '-');
 	PRINT_T(1);
-	if (strcmp("Bonjour, comment vas-tu ?", c2) != 0) {
+	if (strcmp("Bonjour, comment vas-tu ?", cT) != 0) {
 		PRINT_T_ERROR();
 		returnValue = 1;
 	} else {
 		PRINT_T_OK();
 	}
+	libererSimple((void **) &cT);
 
-	libererSimple((void **) &c2);
+	copierCharE((void *) c2, (void **) &cT);
+	removeHeadAndTailChar(&cT, '-');
+	PRINT_T(2);
+	if (strcmp("", cT) != 0) {
+		PRINT_T_ERROR();
+		returnValue = 1;
+	} else {
+		PRINT_T_OK();
+	}
+	libererSimple((void **) &cT);
 
 	return returnValue;
 }
