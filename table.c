@@ -6,26 +6,30 @@
 
 
 /* Vérifié. */
-void destroyTable(table ** tab) {
-	if ((* tab) != NULL) {
-		file_detruire(&((* tab)->lines));
-		libererSimple((void **) tab);
+void destroyTable(void ** tab) {
+	table * t = (table *) (* tab);
+	if (t != NULL) {
+		file_detruire(&(t->lines));
+		libererSimple((void **) &t);
 	}
 }
 
-void newTables(table ** tabs, int nbTables) {
-    (* tabs) = (table *) malloc((sizeof (table)) * nbTables);
+void newTables(void ** tabs, int nbTables) {
+	table ** ts = NULL;
+	ts = (table **) malloc((sizeof (table *)) * nbTables);
+	(* tabs) = ts;
 }
 
-void destroyTables(table ** tabs, int nbTables) {
-    if((* tabs) != NULL) {
-        int i;
+void destroyTables(void ** tabs, int nbTables) {
+	table ** ts = (table **) (* tabs);
+	if(ts != NULL) {
+		int i;
 
-        for (i = 0; i < nbTables; i++){
-            destroyTable(&(tabs[i]));
-        }
-        libererSimple((void **) tabs);
-    }
+		for (i = 0; i < nbTables; i++){
+			destroyTable((void **) &(ts[i]));
+		}
+		libererSimple((void **) ts);
+	}
 }
 
 /* Vérifié. */
@@ -80,7 +84,7 @@ int countNumberOfChamps(char * str, const char * delimitor) {
 /* Vérifié. */
 int divideCharEToCharEArray(xEArray ** dest, int nbElements, const char * delimitor, char * src) {
 	int i = 0;
-	char * temp;
+	char * temp = NULL;
 	char * token = NULL;
 	xEArray * cEA = NULL;
 
@@ -89,15 +93,17 @@ int divideCharEToCharEArray(xEArray ** dest, int nbElements, const char * delimi
 	token = strtok(src, delimitor);
 	while (token != NULL) {
 		if (i < nbElements) {
-			ajouterXEArray(cEA, i, (void *) token);
-			temp = (char *) accesXEArray(cEA, i);
+			copierCharE((void *) token, (void **) &temp);
 			removeHeadAndTailChar(&temp, TOKENGARBAGE);
+			ajouterXEArray(cEA, i, (void *) temp);
+			libererSimple((void **) &temp);
 		} else {
 			libererXEArray((void **) &cEA);
 			return ERROR_MALFORMEDFILE;
 		}
-		i++;
+
 		token = strtok(NULL, delimitor);
+		i++;
 	}
 
 	if (i != nbElements) {
@@ -106,7 +112,6 @@ int divideCharEToCharEArray(xEArray ** dest, int nbElements, const char * delimi
 	}
 
 	(* dest) = cEA;
-
 	return 0;
 }
 
@@ -120,11 +125,11 @@ int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, const file_parcours va
 		file_parcours_suivant(values, (void **) &value);
 		if (((* value) + 1) > cEAIn->nbElements) {
 
-            libererSimple((void **) &value);
-		    libererXEArray((void **) cEAOut);
-            return ERROR_INEXISTANTCHAMP;
-        }
-		ajouterXEArray(* cEAOut, i, accesXEArray(cEAIn, * value));
+			libererSimple((void **) &value);
+			libererXEArray((void **) cEAOut);
+			return ERROR_INEXISTANTCHAMP;
+		}
+		/*ajouterXEArray(* cEAOut, i, accesXEArray(cEAIn, * value));*/
 		libererSimple((void **) &value);
 		i++;
 	}
@@ -133,7 +138,7 @@ int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, const file_parcours va
 }
 
 /* À vérifier. */
-int createTable(table ** tab, const char * fileName, const file ordreApparitions) {
+int createTable(table * tab, const char * fileName, const file ordreApparitions) {
 	FILE * fichier = NULL;
 
 	fichier = fopen(fileName, "r");
@@ -147,8 +152,7 @@ int createTable(table ** tab, const char * fileName, const file ordreApparitions
 		xEArray * cEAIn = NULL;
 		xEArray * cEAOut = NULL;
 
-		(* tab) = (table *) malloc(sizeof (table));
-		file_creer(&((* tab)->lines), &copierXEArray, &libererXEArray);
+		file_creer(&(tab->lines), &copierXEArray, &libererXEArray);
 
 		/* Si il y au moins un champ à extraire. */
 		if (file_taille(ordreApparitions) > 0) {
@@ -156,7 +160,7 @@ int createTable(table ** tab, const char * fileName, const file ordreApparitions
 			lastLine = getLine(&line, fichier);
 			nbChamps = countNumberOfChamps(line, TOKENDELIMITOR);
 			libererSimple((void **) &line);
-			(* tab)->nbRows = nbChamps;
+			tab->nbRows = nbChamps;
 
 			/* TC */
 			rewind(fichier);
@@ -170,7 +174,6 @@ int createTable(table ** tab, const char * fileName, const file ordreApparitions
 						P_ERROR_MALFORMEDFILE(fileName);
 					}
 
-					destroyTable(tab);
 					libererXEArray((void **) &cEAIn);
 					fclose(fichier);
 					return result;
@@ -179,19 +182,18 @@ int createTable(table ** tab, const char * fileName, const file ordreApparitions
 				values = file_parcours_creer(ordreApparitions);
 				result = rearrangeLineRows(&cEAOut, cEAIn, values, file_taille(ordreApparitions));
 				if (result == 0) {
-                    file_ajouter((* tab)->lines, cEAOut);
-                }
-                file_parcours_detruire(&values);
+					file_ajouter(tab->lines, cEAOut);
+				}
+				file_parcours_detruire(&values);
 				libererXEArray((void **) &cEAOut);
-                if (result != 0) {
-                    if (result == ERROR_INEXISTANTCHAMP) {
-                        P_ERROR_INEXISTANTCHAMP(fileName, cEAIn->nbElements);
-                    }
-                    destroyTable(tab);
-                    fclose(fichier);
-                    return result;
-                }
-                libererXEArray((void **) &cEAIn);
+				if (result != 0) {
+					if (result == ERROR_INEXISTANTCHAMP) {
+						P_ERROR_INEXISTANTCHAMP(fileName, cEAIn->nbElements);
+					}
+					fclose(fichier);
+					return result;
+				}
+				libererXEArray((void **) &cEAIn);
 			}
 		}
 
@@ -205,28 +207,30 @@ int createTable(table ** tab, const char * fileName, const file ordreApparitions
 	return 0;
 }
 
-int createTables(table ** tabs, const file nomsTables, const file * tabFChamps) {
-    int i;
-    int nbFichiers;
-    int result;
-    char * temp;
-    file_parcours parcours = NULL;
+int createTables(void ** tabs, const file nomsTables, const file * tabFChamps) {
+	int i;
+	int nbFichiers;
+	int result;
+	table ** tabx = NULL;
+	char * temp;
+	file_parcours parcours = NULL;
 
-    i = 0;
-    nbFichiers = file_taille(nomsTables);
-    newTables(tabs, nbFichiers);
+	i = 0;
+	nbFichiers = file_taille(nomsTables);
+	newTables((void **) &tabx, nbFichiers);
 
-    parcours = file_parcours_creer(nomsTables);
-    while (!file_parcours_est_fini(parcours)) {
-        file_parcours_suivant(parcours, (void **) &temp);
-        result = createTable(&((tabs)[i]), temp, tabFChamps[i]);
-        libererSimple((void **) &temp);
-        if (result != 0) {
-            destroyTables(tabs, nbFichiers);
-        }
-        i++;
-    }
-    file_parcours_detruire(&parcours);
+	parcours = file_parcours_creer(nomsTables);
+	while (!file_parcours_est_fini(parcours)) {
+		file_parcours_suivant(parcours, (void **) &temp);
+		tabx[i] = (table *) malloc(sizeof (table));
+		result = createTable(tabx[i], temp, tabFChamps[i]);
+		libererSimple((void **) &temp);
+		if (result != 0) {
+			destroyTables((void **) tabx, nbFichiers);
+		}
+		i++;
+	}
+	file_parcours_detruire(&parcours);
 
 	return 0;
 }

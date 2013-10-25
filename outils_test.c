@@ -6,12 +6,8 @@
 #include "outils.h"
 
 
-#define PRINT_T(x) printf("\tTest %d [", x)
-#define PRINT_T_OK() printf("] OK !\n")
-#define PRINT_T_ERROR() printf("] Failed !\n")
-
-
 int copierCharE_test() {
+	int returnValue = 0;
 	char c1[] = "Bonjour, comment vas-tu ?";
 	void * c2 = NULL;
 
@@ -20,16 +16,18 @@ int copierCharE_test() {
 	PRINT_T(1);
 	if (strcmp(c1, c2) != 0) {
 		PRINT_T_ERROR();
-		return 1;
+		returnValue = 1;
+	} else {
+		PRINT_T_OK();
 	}
-	PRINT_T_OK();
 
 	libererSimple((void **) &c2);
 
-	return 0;
+	return returnValue;
 }
 
 int removeHeadAndTailChar_test() {
+	int returnValue = 0;
 	char c1[] = "---Bonjour, comment vas-tu ?-------";
 	char * c2;
 
@@ -39,13 +37,14 @@ int removeHeadAndTailChar_test() {
 	PRINT_T(1);
 	if (strcmp("Bonjour, comment vas-tu ?", c2) != 0) {
 		PRINT_T_ERROR();
-		return 1;
+		returnValue = 1;
+	} else {
+		PRINT_T_OK();
 	}
-	PRINT_T_OK();
 
 	libererSimple((void **) &c2);
 
-	return 0;
+	return returnValue;
 }
 
 int main(void) {

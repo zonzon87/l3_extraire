@@ -23,11 +23,11 @@ typedef struct table {
 } table;
 
 
-extern void destroyTable(table ** tab);
+extern void destroyTable(void ** tab);
 
-extern void newTables(table ** tabs, int nbTables);
+extern void newTables(void ** tabs, int nbTables);
 
-extern void destroyTables(table ** tabs, int nbTables);
+extern void destroyTables(void ** tabs, int nbTables);
 
 /*	Permet la copie d'une ligne d'un fichier, en supposant que le curseur de
 	fichier est positionné 1 caractère avant le premier de la ligne à extraire.
@@ -49,9 +49,9 @@ extern int divideCharEToCharEArray(xEArray ** dest, int nbElements, const char *
 
 extern int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, const file_parcours values, int nbValues);
 
-extern int createTable(table ** tab, const char * fileName, const file ordreApparitions);
+extern int createTable(table * tab, const char * fileName, const file ordreApparitions);
 
-extern int createTables(table ** tabs, const file nomsTables, const file * tabFChamps);
+extern int createTables(void ** tabs, const file nomsTables, const file * tabFChamps);
 
 extern void tableToPrint(table * tab);
 

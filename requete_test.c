@@ -8,8 +8,9 @@
 
 
 int parseSyntaxChamp_test() {
-	int i;
 	int returnValue = 0;
+	int i;
+	
 	champ * ch = NULL;
 
 	/* Les tests suivants doivent être corrects. */
@@ -70,8 +71,9 @@ int parseSyntaxChamp_test() {
 }
 
 int parseSyntaxCondition_test() {
-	int i;
 	int returnValue = 0;
+	int i;
+	
 	condition * co = NULL;
 
 	/* Les tests suivants doivent être corrects. */
@@ -143,8 +145,9 @@ int parseSyntaxCondition_test() {
 }
 
 int initRequete_test() {
-	int i;
 	int returnValue = 0;
+	int i;
+
 	requete * req = NULL;
 
 	/* Les tests suivants doivent être corrects. */
@@ -241,8 +244,9 @@ int initRequete_test() {
 }
 
 void createRequete_test() {
-    int i;
 	int returnValue = 0;
+    int i;
+
 	requete * req = NULL;
 
 	/* Les tests suivants sont corrects. */
