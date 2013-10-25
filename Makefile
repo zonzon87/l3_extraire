@@ -95,7 +95,7 @@ requete_test : requete.o file.o outils.o requete_test.c
 	@valgrind $(VFLAGS) ./$@
 
 # TEST du module TABLE avec un TEST MÉMOIRE
-table_test : table.o file.o earray.o outils.o table_test.c
+table_test : table.o file.o earray.o outils.o requete.o table_test.c
 	@$(CC) $(CFLAGS) $(LFLAGS) -o $@ $^
 	@valgrind $(VFLAGS) ./$@
 

@@ -4,7 +4,6 @@
 #include "file.h"
 #include "earray.h"
 #include "outils.h"
-#include "requete.h"
 
 #define TOKENDELIMITOR "|"
 #define TOKENGARBAGE ' '
@@ -26,6 +25,10 @@ typedef struct table {
 
 extern void destroyTable(table ** tab);
 
+extern void newTables(table ** tabs, int nbTables);
+
+extern void destroyTables(table ** tabs, int nbTables);
+
 /*	Permet la copie d'une ligne d'un fichier, en supposant que le curseur de
 	fichier est positionné 1 caractère avant le premier de la ligne à extraire.
 	Entrée : char ** line avec (* line) non-alloué, FILE * fichier ouvert
@@ -44,11 +47,11 @@ extern int countNumberOfChamps(char * str, const char * delimitor);
 
 extern int divideCharEToCharEArray(xEArray ** dest, int nbElements, const char * delimitor, char * src);
 
-extern int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, file_parcours values, int nbValues);
+extern int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, const file_parcours values, int nbValues);
 
-extern int createTable(table ** tab, const char * fileName, file ordreApparitions);
+extern int createTable(table ** tab, const char * fileName, const file ordreApparitions);
 
-extern int createTables(file ** tables, file nomsTables, file * tabFChamps);
+extern int createTables(table ** tabs, const file nomsTables, const file * tabFChamps);
 
 extern void tableToPrint(table * tab);
 

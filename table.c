@@ -13,6 +13,21 @@ void destroyTable(table ** tab) {
 	}
 }
 
+void newTables(table ** tabs, int nbTables) {
+    (* tabs) = (table *) malloc((sizeof (table)) * nbTables);
+}
+
+void destroyTables(table ** tabs, int nbTables) {
+    if((* tabs) != NULL) {
+        int i;
+
+        for (i = 0; i < nbTables; i++){
+            destroyTable(&(tabs[i]));
+        }
+        libererSimple((void **) tabs);
+    }
+}
+
 /* Vérifié. */
 int getLine(char ** line, FILE * fichier) {
 	int bufferLength = 0;
@@ -96,7 +111,7 @@ int divideCharEToCharEArray(xEArray ** dest, int nbElements, const char * delimi
 }
 
 /* Vérifié. */
-int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, file_parcours values, int nbValues) {
+int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, const file_parcours values, int nbValues) {
 	int i = 0;
 	int * value;
 
@@ -118,7 +133,7 @@ int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, file_parcours values, 
 }
 
 /* À vérifier. */
-int createTable(table ** tab, const char * fileName, file ordreApparitions) {
+int createTable(table ** tab, const char * fileName, const file ordreApparitions) {
 	FILE * fichier = NULL;
 
 	fichier = fopen(fileName, "r");
@@ -190,8 +205,28 @@ int createTable(table ** tab, const char * fileName, file ordreApparitions) {
 	return 0;
 }
 
-int createTables(file ** tables, file nomsTables, file * tabFChamps) {
+int createTables(table ** tabs, const file nomsTables, const file * tabFChamps) {
+    int i;
+    int nbFichiers;
+    int result;
+    char * temp;
+    file_parcours parcours = NULL;
 
+    i = 0;
+    nbFichiers = file_taille(nomsTables);
+    newTables(tabs, nbFichiers);
+
+    parcours = file_parcours_creer(nomsTables);
+    while (!file_parcours_est_fini(parcours)) {
+        file_parcours_suivant(parcours, (void **) &temp);
+        result = createTable(&((tabs)[i]), temp, tabFChamps[i]);
+        libererSimple((void **) &temp);
+        if (result != 0) {
+            destroyTables(tabs, nbFichiers);
+        }
+        i++;
+    }
+    file_parcours_detruire(&parcours);
 
 	return 0;
 }

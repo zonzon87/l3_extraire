@@ -8,6 +8,7 @@
 #include "outils.h"
 
 
+/* Vérifié. */
 void copierChamp(const void * valeur, void ** lieu) {
 	champ * ch = (champ *) valeur;
 	(* lieu) = (champ *) malloc(sizeof (champ));
@@ -15,6 +16,7 @@ void copierChamp(const void * valeur, void ** lieu) {
 	((champ *) (* lieu))->row = ch->row;
 }
 
+/* Vérifié. */
 int comparerChamp(const champ * ch1, const champ * ch2) {
 	if (ch1->table > ch2->table) {
 		return 1;
@@ -30,6 +32,7 @@ int comparerChamp(const champ * ch1, const champ * ch2) {
 	return 0;
 }
 
+/* Vérifié. */
 void copierCondition(const void * valeur, void ** lieu) {
 	condition * co = (condition *) valeur;
 	(* lieu) = (condition *) malloc(sizeof (condition));
@@ -39,6 +42,7 @@ void copierCondition(const void * valeur, void ** lieu) {
 	copierChamp((void *) (co->champ2), (void **) &(((condition *) (* lieu))->champ2));
 }
 
+/* Vérifié. */
 void libererCondition(void ** lieu) {
 	if ((* lieu) != NULL) {
 		libererSimple((void **) &(((condition *) (* lieu))->champ1));
@@ -48,6 +52,7 @@ void libererCondition(void ** lieu) {
 	}
 }
 
+/* Vérifié. */
 void newRequete(requete ** req) {
     (* req) = (requete *) malloc(sizeof (requete));
 	file_creer(&((* req)->champsSortie), &copierChamp, &libererSimple);
@@ -58,6 +63,7 @@ void newRequete(requete ** req) {
 	(* req)->tabFChamps = NULL;
 }
 
+/* Vérifié. */
 void destroyRequete(requete ** req) {
 	if ((* req) != NULL) {
 	    int i;
@@ -67,8 +73,10 @@ void destroyRequete(requete ** req) {
 		file_detruire(&((* req)->nomsTables));
 		file_detruire(&((* req)->conditions));
 		libererSimple((void **) &((* req)->champOrdre));
-		for (i = 0; i < nbFichiers; i++) {
-            file_detruire(&((* req)->tabFChamps[i]));
+		if ((* req)->tabFChamps != NULL) {
+            for (i = 0; i < nbFichiers; i++) {
+                file_detruire(&((* req)->tabFChamps[i]));
+            }
         }
 		libererSimple((void **) &((* req)->tabFChamps));
 		libererSimple((void **) req);
@@ -451,10 +459,12 @@ int searchRowInFile(file f, int row) {
     while (!file_parcours_est_fini(parcours)) {
         file_parcours_suivant(parcours, (void **) &value);
         if (row == (* value)) {
+            libererSimple((void **) &value);
             file_parcours_detruire(&parcours);
             return i;
         }
         i++;
+        libererSimple((void **) &value);
     }
     file_parcours_detruire(&parcours);
 
@@ -507,8 +517,12 @@ void optimizeRequete(const requete * reqInit, requete ** reqOpt) {
     }
 
     {
-        copierChamp(reqInit->champOrdre, (void **) &((* reqOpt)->champOrdre));
-        completeChamps(champs, (* reqOpt)->champOrdre);
+        if (reqInit->champOrdre != NULL) {
+            copierChamp(reqInit->champOrdre, (void **) &((* reqOpt)->champOrdre));
+            completeChamps(champs, (* reqOpt)->champOrdre);
+        } else {
+            (* reqOpt)->champOrdre = NULL;
+        }
     }
 
     {
@@ -520,7 +534,7 @@ void optimizeRequete(const requete * reqInit, requete ** reqOpt) {
             completeChamps(champs, co->champ1);
             completeChamps(champs, co->champ2);
             file_ajouter((* reqOpt)->conditions, co);
-            libererCondition((void **) co);
+            libererCondition((void **) &co);
         }
         file_parcours_detruire(&parcours);
     }
@@ -532,6 +546,7 @@ void optimizeRequete(const requete * reqInit, requete ** reqOpt) {
         while(!file_parcours_est_fini(parcours)) {
             file_parcours_suivant(parcours, (void **) &str);
             file_ajouter((* reqOpt)->nomsTables, str);
+            libererSimple((void **) &str);
         }
         file_parcours_detruire(&parcours);
     }
@@ -548,6 +563,7 @@ int createRequete(requete ** req, const int argc, const char * argv[]) {
     if (initRequete(&reqInit, argc, argv) == 0) {
         optimizeRequete(reqInit, req);
     }
+    destroyRequete(&reqInit);
 
     return 0;
 }
