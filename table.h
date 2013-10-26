@@ -2,6 +2,7 @@
 #define __TABLE_H__
 
 #include "file.h"
+#include "file_extend.h"
 #include "xearray.h"
 
 #define TOKENDELIMITOR "|"
@@ -14,10 +15,7 @@
 
 typedef xEArray tableLine;
 
-typedef struct table {
-	int nbRows;
-	file lines;
-} table;
+typedef file_struct table;
 
 typedef xEArray tables;
 

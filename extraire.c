@@ -1,20 +1,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "outils.h"
 #include "requete.h"
 #include "table.h"
 
 void jointure(requete * req, tables * tEA) {
 	int i;
+	file_parcours parcours = NULL;
 	file_parcours parcoursConditions = NULL;
 	xEArray * parcoursTableEArray = NULL;
-	xEArray * tabCEArray = NULL;
+	tableLine * cEArray = NULL;
 
-	creerXEArray(&parcoursTableEArray, tEA->nbElements, NULL, liberer);
+	creerXEArray(&parcoursTableEArray, tEA->nbElements, NULL, libererFile_parcours);
 	for (i = 0; i < parcoursTableEArray->nbElements; i++) {
-
+        parcours = file_parcours_creer(accesXEArray(tEA, i));
+        lienXEArray(parcoursTableEArray, i, parcours);
+        parcours = NULL;
 	}
 
+    creerXEArray(&cEArray, tEA->nbElements, NULL, &libererSimple);
+
+
+    libererXEArray((void **) &parcoursTableEArray);
 }
 
 int main(int argc, const char * argv[]) {

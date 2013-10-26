@@ -20,7 +20,7 @@ int file_creer(file * file_lieu, void (* copier)(const void * valeur, void ** li
 int file_detruire(file * list) {
 	void * olddata = NULL;
 
-	if (list == NULL) {
+	if ((* list) == NULL) {
 		return FILE_ERREUR_NOT_A_FILE;
 	}
 	/* On retire tous les éléments de la file. */
@@ -121,9 +121,15 @@ void file_parcours_detruire(file_parcours * parcours) {
 }
 
 void file_parcours_suivant(file_parcours parcours, void ** lieu) {
-		(* (parcours->list->copier))(parcours->pointerMaillon->data, lieu);
-		parcours->pointerMaillon = parcours->pointerMaillon->next;
+    (* (parcours->list->copier))(parcours->pointerMaillon->data, lieu);
+    parcours->pointerMaillon = parcours->pointerMaillon->next;
 }
+
+void file_parcours_suivant_lien(file_parcours parcours, void ** lieu) {
+    (* lieu) = parcours->pointerMaillon->data;
+    parcours->pointerMaillon = parcours->pointerMaillon->next;
+}
+
 
 int file_parcours_est_fini(file_parcours parcours) {
 	if (parcours == NULL) {

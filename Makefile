@@ -17,18 +17,18 @@ VFLAGS := --leak-check=full --show-reachable=yes --track-origins=yes
 # Construction par défaut :
 all :
 	@echo "Disponible à la construction :"
-	@echo "compilation => compilation (ne doit produire ni erreur ni alerte)"
+	@echo "compilation => compilation extraire.c"
 	@echo "test => test simple sur une requete"
-	@echo "memoire => test les fuites mémoire (il ne doit pas y en avoir)"
+	@echo "memoire => teste les fuites mémoire"
 	@echo "alltest => lance tout les tests de module existants"
 	@echo "file_test => petit test du module file avec un test mémoire"
-	@echo "xearray_test => test sur le module earray, avec valgrind"
+	@echo "xearray_test => test sur le module xearray, avec valgrind"
 	@echo "outils_test => test sur le module outils, avec valgrind"
 	@echo "requete_test => test sur le module requete, avec valgrind"
-	@echo "table_test => test sur le module requete, avec valgrind"
+	@echo "table_test => test sur le module table, avec valgrind"
 	@echo "archive => produit la fichier pour le rendu"
 	@echo "clean => nettoie le répertoire *.o"
-	@echo "clean => nettoie le répertoire des exécutables"
+	@echo "cleanexec => nettoie le répertoire des exécutables"
 
 
 # Compilation

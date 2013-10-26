@@ -22,6 +22,7 @@ typedef struct file_parcours_struct {
 	maillon pointerMaillon;
 } file_parcours_struct;
 
+extern void file_parcours_suivant_lien(file_parcours parcours, void ** lieu);
 
 extern void file_parcours_reset(file_parcours parcours);
 

@@ -7,10 +7,7 @@
 
 
 void destroyTable(void ** tab) {
-	if ((* tab) != NULL) {
-		file_detruire(&((* ((table **) tab))->lines));
-		libererSimple(tab);
-	}
+    file_detruire((file *) tab);
 }
 
 void destroyTables(tables ** tEA) {
@@ -42,7 +39,6 @@ int countNumberOfChamps(char * str, const char * delimitor, int * nbTokenAtFirst
 	return i;
 }
 
-/* Testé. */
 int divideCharEToCharEArray(tableLine ** dest, int nbElements, int nbTokenAtFirstLine, const char * delimitor, char * src) {
 	int i = 0;
 	int maxI = 0;
@@ -106,7 +102,7 @@ int rearrangeLineRows(tableLine ** cEAOut, tableLine * cEAIn, const file_parcour
 int createTable(table ** tab, const char * fileName, const file ordreApparitions) {
 	int returnValue = 0;
 	table * tabT = NULL;
-	
+
 	FILE * fichier = NULL;
 	fichier = fopen(fileName, "r");
 
@@ -120,8 +116,7 @@ int createTable(table ** tab, const char * fileName, const file ordreApparitions
 		tableLine * cEAIn = NULL;
 		tableLine * cEAOut = NULL;
 
-		tabT = (table *) malloc(sizeof (table));
-		file_creer(&(tabT->lines), &copierXEArray, &libererXEArray);
+		file_creer(&tabT, &copierXEArray, &libererXEArray);
 
 		/* Si il y au moins un champ à extraire. */
 		if (file_taille(ordreApparitions) > 0) {
@@ -129,7 +124,6 @@ int createTable(table ** tab, const char * fileName, const file ordreApparitions
 			lastLine = getLine(&line, fichier);
 			nbChamps = countNumberOfChamps(line, TOKENDELIMITOR, &nbTokenAtFirstLine);
 			libererSimple((void **) &line);
-			tabT->nbRows = nbChamps;
 
 			rewind(fichier);
 			/* TC */
@@ -151,14 +145,14 @@ int createTable(table ** tab, const char * fileName, const file ordreApparitions
 
 					values = file_parcours_creer(ordreApparitions);
 					result = rearrangeLineRows(&cEAOut, cEAIn, values, file_taille(ordreApparitions));
-					
+
 					if (result == 0) {
-						file_ajouter(tabT->lines, cEAOut);
+						file_ajouter(tabT, cEAOut);
 					}
 
 					file_parcours_detruire(&values);
 					libererXEArray((void **) &cEAOut);
-					
+
 					if (result != 0) {
 						if (result == ERROR_INEXISTANTCHAMP) {
 							P_ERROR_INEXISTANTCHAMP(fileName, cEAIn->nbElements);
@@ -231,7 +225,7 @@ void charEArrayToPrint(tableLine * cEA) {
 }
 
 void tableToPrint(table * tab) {
-	file_parcours parcours = file_parcours_creer(tab->lines);
+	file_parcours parcours = file_parcours_creer(tab);
 	tableLine * cEA = NULL;
 
 	while (!file_parcours_est_fini(parcours)) {
