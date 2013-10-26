@@ -6,10 +6,6 @@
 #include "outils.h"
 
 
-void copyTable(const void * valeur, void ** lieu) {
-	/*copierFile*/
-}
-
 void destroyTable(void ** tab) {
 	if ((* tab) != NULL) {
 		file_detruire(&((* ((table **) tab))->lines));
@@ -17,47 +13,10 @@ void destroyTable(void ** tab) {
 	}
 }
 
-void destroyTables(xEArray ** tEA) {
+void destroyTables(tables ** tEA) {
 	libererXEArray((void **) tEA);
 }
 
-
-int getLine(char ** line, FILE * fichier) {
-	int bufferLength = 0;
-	int bufferCount = 0;
-	int length = 0;
-	char c = '\0';
-	char * buffer = NULL;
-
-	while ((c != '\r') && (c != '\n') && (c != EOF)) {
-		if(bufferCount == bufferLength) {
-			bufferCount = 0;
-			bufferLength += TABLE_BUFFER;
-			buffer = (char *) realloc(buffer, bufferLength);
-		}
-		c = getc(fichier);
-		buffer[length] = c;
-		length++;
-		bufferCount++;
-	}
-	if (c == '\r') {
-		c = getc(fichier);
-		if (c != '\n') {
-			fseek(fichier, -1, SEEK_CUR);
-			c = '\r';
-		}
-	}
-	buffer[length - 1] = '\0';
-
-	(* line) = buffer;
-
-	if (c == EOF) {
-		return LINE_EOF;
-	}
-	return 0;
-}
-
-/* Testé. */
 int countNumberOfChamps(char * str, const char * delimitor, int * nbTokenAtFirstLine) {
 	int i = 0;
 	char * test = NULL;
@@ -84,12 +43,12 @@ int countNumberOfChamps(char * str, const char * delimitor, int * nbTokenAtFirst
 }
 
 /* Testé. */
-int divideCharEToCharEArray(xEArray ** dest, int nbElements, int nbTokenAtFirstLine, const char * delimitor, char * src) {
+int divideCharEToCharEArray(tableLine ** dest, int nbElements, int nbTokenAtFirstLine, const char * delimitor, char * src) {
 	int i = 0;
 	int maxI = 0;
 	char * temp = NULL;
 	char * token = NULL;
-	xEArray * cEA = NULL;
+	tableLine * cEA = NULL;
 
 	creerXEArray(&cEA, nbElements, &copierCharE, &libererSimple);
 
@@ -123,8 +82,7 @@ int divideCharEToCharEArray(xEArray ** dest, int nbElements, int nbTokenAtFirstL
 	return 0;
 }
 
-/* Testé. */
-int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, const file_parcours values, int nbValues) {
+int rearrangeLineRows(tableLine ** cEAOut, tableLine * cEAIn, const file_parcours values, int nbValues) {
 	int i = 0;
 	int * value = NULL;
 
@@ -145,7 +103,6 @@ int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, const file_parcours va
 	return 0;
 }
 
-/* À vérifier. */
 int createTable(table ** tab, const char * fileName, const file ordreApparitions) {
 	int returnValue = 0;
 	table * tabT = NULL;
@@ -160,8 +117,8 @@ int createTable(table ** tab, const char * fileName, const file ordreApparitions
 		int lastLine = 0;
 		char * line = NULL;
 		file_parcours values = NULL;
-		xEArray * cEAIn = NULL;
-		xEArray * cEAOut = NULL;
+		tableLine * cEAIn = NULL;
+		tableLine * cEAOut = NULL;
 
 		tabT = (table *) malloc(sizeof (table));
 		file_creer(&(tabT->lines), &copierXEArray, &libererXEArray);
@@ -233,33 +190,38 @@ int createTable(table ** tab, const char * fileName, const file ordreApparitions
 	return returnValue;
 }
 
-int createTables(xEArray ** tEA, const file nomsTables, const file * tabFChamps) {
-	int i;
+int createTables(tables ** tEA, const file nomsFichiers, const file * ordreApparitions) {
+	int i = 0;
 	int result;
-	char * nomFichier;
+	char * nomFichier = NULL;
 	file_parcours parcours = NULL;
+	table * tab = NULL;
+	tables * tEAT = NULL;
 
-	xEArray * tEAT = NULL;
+	creerXEArray(&tEAT, file_taille(nomsFichiers), NULL, &destroyTable);
 
-	creerXEArray(&tEAT, file_taille(nomsTables), &copyTable, &destroyTable);
-
-	/*parcours = file_parcours_creer(nomsTables);
+	parcours = file_parcours_creer(nomsFichiers);
 	while (!file_parcours_est_fini(parcours)) {
-		file_parcours_suivant(parcours, (void **) &temp);
-
-		result = createTable(tabx[i], temp, tabFChamps[i]);
-		libererSimple((void **) &temp);
+		file_parcours_suivant(parcours, (void **) &nomFichier);
+		result = createTable(&tab, nomFichier, ordreApparitions[i]);
+		libererSimple((void **) &nomFichier);
 		if (result != 0) {
-			destroyTables((void **) tabx, nbFichiers);
+			destroyTables(&tEAT);
+			file_parcours_detruire(&parcours);
+			return result;
+		} else {
+			lienXEArray(tEAT, i, (void *) tab);
+			tab = NULL;
 		}
 		i++;
 	}
-	file_parcours_detruire(&parcours);*/
+	file_parcours_detruire(&parcours);
 
+	(* tEA) = tEAT;
 	return 0;
 }
 
-void charEArrayToPrint(xEArray * cEA) {
+void charEArrayToPrint(tableLine * cEA) {
 	int i;
 
 	for (i = 0; i < cEA->nbElements; i++) {
@@ -270,7 +232,7 @@ void charEArrayToPrint(xEArray * cEA) {
 
 void tableToPrint(table * tab) {
 	file_parcours parcours = file_parcours_creer(tab->lines);
-	xEArray * cEA = NULL;
+	tableLine * cEA = NULL;
 
 	while (!file_parcours_est_fini(parcours)) {
 		file_parcours_suivant(parcours, (void **) &cEA);

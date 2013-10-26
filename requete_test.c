@@ -218,7 +218,7 @@ int initRequete_test() {
 		if	(
 			(initRequete(&req, atoi(cOut[i][0]), cIn[i]) != 0) ||
 			(file_taille(req->champsSortie) != atoi(cOut[i][1])) ||
-			(file_taille(req->nomsTables) != atoi(cOut[i][2])) ||
+			(file_taille(req->nomsFichiers) != atoi(cOut[i][2])) ||
 			(file_taille(req->conditions) != atoi(cOut[i][3])) ||
 			(req->option != cOut[i][4][0]) ||
 			((req->option == C_ORDER) && (req->champOrdre == NULL))

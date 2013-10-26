@@ -61,9 +61,9 @@ TEST_REQUETE_2 := a.3 b.5 a.4 b.2 b.9 de $(DONNES_DIR)/r2-1.table $(DONNES_DIR)/
 test : extraire
 	@mkdir -p $(RESULTATS_DIR)
 	@./extraire $(TEST_REQUETE_1) 1> $(RESULTATS_DIR)/requete_1.table
-	@if ! diff $(RESULTATS_DIR)/requete_1.table $(RESULTATS_ATTENDUS_DIR)/requete_1.table ; then echo "*** RÉSUTALT INCORRECT ***" ; false ; else echo "Test 1 OK" ; fi
+	@if ! diff $(RESULTATS_DIR)/requete_1.table $(RESULTATS_ATTENDUS_DIR)/requete_1.table ; then echo "*** RÉSUTALT INCORRECT ***" ; false ; else echo "Test 1 OK !" ; fi
 #	@./extraire $(TEST_REQUETE_2) 1> $(RESULTATS_DIR)/requete_2.table
-#	@if ! diff $(RESULTATS_DIR)/requete_2.table $(RESULTATS_ATTENDUS_DIR)/requete_2.table ; then echo "*** RÉSUTALT INCORRECT ***" ; false ; else echo "Test 2 OK" ; fi
+#	@if ! diff $(RESULTATS_DIR)/requete_2.table $(RESULTATS_ATTENDUS_DIR)/requete_2.table ; then echo "*** RÉSUTALT INCORRECT ***" ; false ; else echo "Test 2 OK !" ; fi
 
 # TEST de GESTION de la MÉMOIRE
 memoire : extraire
@@ -78,7 +78,7 @@ file_test : file.o file_test.c
 	@mkdir -p $(RESULTATS_DIR)
 	@$(CC) $(CFLAGS) -o $@ file.o file_test.c
 	@valgrind $(VFLAGS) ./$@ > $(RESULTATS_DIR)/file_test.output
-	@if ! diff $(RESULTATS_DIR)/file_test.output $(RESULTATS_ATTENDUS_DIR)/file_test.output ; then echo "*** RÉSUTALT INCORRECT ***" ; false ; else echo OK ; fi
+	@if ! diff $(RESULTATS_DIR)/file_test.output $(RESULTATS_ATTENDUS_DIR)/file_test.output ; then echo "*** RÉSUTALT INCORRECT ***" ; false ; else echo "OK !" ; fi
 
 # TEST du module EARRAY avec un TEST MÉMOIRE
 xearray_test : xearray.o outils.o xearray_test.c

@@ -33,11 +33,11 @@ typedef struct condition {
 
 typedef struct requete {
 	file champsSortie;
-	file nomsTables;
+	file nomsFichiers;
 	file conditions;
 	char option;
 	champ * champOrdre;
-	file * tabFChamps;
+	file * ordreApparitions;
 } requete;
 
 

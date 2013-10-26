@@ -50,28 +50,28 @@ void libererCondition(void ** lieu) {
 void newRequete(requete ** req) {
     (* req) = (requete *) malloc(sizeof (requete));
 	file_creer(&((* req)->champsSortie), &copierChamp, &libererSimple);
-	file_creer(&((* req)->nomsTables), &copierCharE, &libererSimple);
+	file_creer(&((* req)->nomsFichiers), &copierCharE, &libererSimple);
 	file_creer(&((* req)->conditions), &copierCondition, &libererCondition);
 	(* req)->option = C_NO_OPTION;
 	(* req)->champOrdre = NULL;
-	(* req)->tabFChamps = NULL;
+	(* req)->ordreApparitions = NULL;
 }
 
 void destroyRequete(requete ** req) {
 	if ((* req) != NULL) {
 	    int i;
-        int nbFichiers = file_taille((* req)->nomsTables);
+        int nbFichiers = file_taille((* req)->nomsFichiers);
 
 		file_detruire(&((* req)->champsSortie));
-		file_detruire(&((* req)->nomsTables));
+		file_detruire(&((* req)->nomsFichiers));
 		file_detruire(&((* req)->conditions));
 		libererSimple((void **) &((* req)->champOrdre));
-		if ((* req)->tabFChamps != NULL) {
+		if ((* req)->ordreApparitions != NULL) {
             for (i = 0; i < nbFichiers; i++) {
-                file_detruire(&((* req)->tabFChamps[i]));
+                file_detruire(&((* req)->ordreApparitions[i]));
             }
         }
-		libererSimple((void **) &((* req)->tabFChamps));
+		libererSimple((void **) &((* req)->ordreApparitions));
 		libererSimple((void **) req);
 	}
 }
@@ -397,7 +397,7 @@ int initRequete(requete ** req, const int argc, const char * argv[]) {
 		/* Enregistrement des chemins des fichiers. */
 		{
 			for (i = ofPosition + 1; i < withPosition; i++) {
-				file_ajouter((* req)->nomsTables, (void *) argv[i]);
+				file_ajouter((* req)->nomsFichiers, (void *) argv[i]);
 			}
 		}
 
@@ -427,7 +427,7 @@ int initRequete(requete ** req, const int argc, const char * argv[]) {
 		printf("Erreur de syntaxe sur la condition : \"%s\" - argv[%d]", argv[i], i);
 	} CATCH (INCOHERENT_REQUETE_EXCEPTION) {
 		returnValue = INCOHERENT_REQUETE_EXCEPTION;
-		printf("Incohérence parmis au moins deux champs.");
+		printf("Incohérence parmis au moins deux arguments.");
 	} FINALLY {
 		/* On nettoie tout si une exception a été levée. */
 		if (returnValue > 0) {
@@ -478,7 +478,7 @@ void optimizeRequete(const requete * reqInit, requete ** reqOpt) {
 	file * champs = NULL;
 	file_parcours parcours = NULL;
 
-    nbFichiers = file_taille(reqInit->nomsTables);
+    nbFichiers = file_taille(reqInit->nomsFichiers);
 
 	champs = (file *) malloc((sizeof (file_struct)) * nbFichiers);
 	for (i = 0; i < nbFichiers; i++) {
@@ -526,10 +526,10 @@ void optimizeRequete(const requete * reqInit, requete ** reqOpt) {
     {
         char * str = NULL;
 
-        parcours = file_parcours_creer(reqInit->nomsTables);
+        parcours = file_parcours_creer(reqInit->nomsFichiers);
         while(!file_parcours_est_fini(parcours)) {
             file_parcours_suivant(parcours, (void **) &str);
-            file_ajouter((* reqOpt)->nomsTables, str);
+            file_ajouter((* reqOpt)->nomsFichiers, str);
             libererSimple((void **) &str);
         }
         file_parcours_detruire(&parcours);
@@ -537,16 +537,21 @@ void optimizeRequete(const requete * reqInit, requete ** reqOpt) {
 
     (* reqOpt)->option = reqInit->option;
 
-    (* reqOpt)->tabFChamps = champs;
+    (* reqOpt)->ordreApparitions = champs;
 }
 
 int createRequete(requete ** req, const int argc, const char * argv[]) {
+	int result = 0;
     requete * reqInit = NULL;
 
-    if (initRequete(&reqInit, argc, argv) == 0) {
+    result = initRequete(&reqInit, argc, argv);
+    if (result == 0) {
         optimizeRequete(reqInit, req);
     }
     destroyRequete(&reqInit);
+    if(result != 0) {
+    	return result;
+    }
 
     return 0;
 }

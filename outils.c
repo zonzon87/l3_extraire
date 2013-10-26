@@ -20,6 +20,41 @@ void copierCharE(const void * valeur, void ** lieu) {
 	strcpy((* lieu), valeur);
 }
 
+int getLine(char ** line, FILE * fichier) {
+	int bufferLength = 0;
+	int bufferCount = 0;
+	int length = 0;
+	char c = '\0';
+	char * buffer = NULL;
+
+	while ((c != '\r') && (c != '\n') && (c != EOF)) {
+		if(bufferCount == bufferLength) {
+			bufferCount = 0;
+			bufferLength += TABLE_BUFFER;
+			buffer = (char *) realloc(buffer, bufferLength);
+		}
+		c = getc(fichier);
+		buffer[length] = c;
+		length++;
+		bufferCount++;
+	}
+	if (c == '\r') {
+		c = getc(fichier);
+		if (c != '\n') {
+			fseek(fichier, -1, SEEK_CUR);
+			c = '\r';
+		}
+	}
+	buffer[length - 1] = '\0';
+
+	(* line) = buffer;
+
+	if (c == EOF) {
+		return LINE_EOF;
+	}
+	return 0;
+}
+
 int isInVAList(char c, int argc, ...) {
 	int i;
 	va_list argList;
