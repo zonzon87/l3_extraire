@@ -23,4 +23,8 @@ typedef struct file_parcours_struct {
 } file_parcours_struct;
 
 
+extern void file_parcours_reset(file_parcours parcours);
+
+extern void libererFile_parcours(void ** lieu);
+
 #endif

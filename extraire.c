@@ -4,6 +4,18 @@
 #include "requete.h"
 #include "table.h"
 
+void jointure(requete * req, tables * tEA) {
+	int i;
+	file_parcours parcoursConditions = NULL;
+	xEArray * parcoursTableEArray = NULL;
+	xEArray * tabCEArray = NULL;
+
+	creerXEArray(&parcoursTableEArray, tEA->nbElements, NULL, liberer);
+	for (i = 0; i < parcoursTableEArray->nbElements; i++) {
+
+	}
+
+}
 
 int main(int argc, const char * argv[]) {
 	requete * req = NULL;

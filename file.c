@@ -104,34 +104,42 @@ int file_taille(file list) {
 }
 
 file_parcours file_parcours_creer(file list) {
-	file_parcours iterate = NULL;
+	file_parcours parcours = NULL;
 
 	if (list != NULL) {
-		iterate = (file_parcours) malloc(sizeof (file_parcours_struct));
-		iterate->list = list;
-		iterate->pointerMaillon = iterate->list->head;
+		parcours = (file_parcours) malloc(sizeof (file_parcours_struct));
+		parcours->list = list;
+		parcours->pointerMaillon = parcours->list->head;
 	}
 
-	return iterate;
+	return parcours;
 }
 
-void file_parcours_detruire(file_parcours * iterate) {
-	free(* iterate);
-	(* iterate) = NULL;
+void file_parcours_detruire(file_parcours * parcours) {
+	free(* parcours);
+	(* parcours) = NULL;
 }
 
-void file_parcours_suivant(file_parcours iterate, void ** lieu) {
-		(* (iterate->list->copier))(iterate->pointerMaillon->data, lieu);
-		iterate->pointerMaillon = iterate->pointerMaillon->next;
+void file_parcours_suivant(file_parcours parcours, void ** lieu) {
+		(* (parcours->list->copier))(parcours->pointerMaillon->data, lieu);
+		parcours->pointerMaillon = parcours->pointerMaillon->next;
 }
 
-int file_parcours_est_fini(file_parcours iterate) {
-	if (iterate == NULL) {
+int file_parcours_est_fini(file_parcours parcours) {
+	if (parcours == NULL) {
 		return FILE_ERREUR_NOT_A_FILE_PARCOURS;
 	}
-	if (iterate->pointerMaillon == NULL) {
+	if (parcours->pointerMaillon == NULL) {
 		return 1;
 	}
 
 	return 0;
+}
+
+void file_parcours_reset(file_parcours parcours) {
+	parcours->pointerMaillon = parcours->list->head;
+}
+
+void libererFile_parcours(void ** lieu) {
+	file_parcours_detruire((file_parcours *) lieu);
 }
