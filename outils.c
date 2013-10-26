@@ -5,25 +5,21 @@
 #include "outils.h"
 
 
-/* Vérifié. */
 void libererSimple(void ** lieu) {
 	free(* lieu);
 	(* lieu) = NULL;
 }
 
-/* Vérifié. */
 void copierIntE(const void * valeur, void ** lieu) {
 	(* lieu) = (void *) malloc (sizeof (int));
 	(** ((int **) lieu)) = (* ((int *) valeur));
 }
 
-/* Vérifié */
 void copierCharE(const void * valeur, void ** lieu) {
 	(* lieu) = (char *) malloc((sizeof (char)) * (strlen((char *) valeur) + 1));
 	strcpy((* lieu), valeur);
 }
 
-/* Vérifié. */
 int isInVAList(char c, int argc, ...) {
 	int i;
 	va_list argList;
@@ -41,7 +37,6 @@ int isInVAList(char c, int argc, ...) {
 	return 1;
 }
 
-/* Vérifié. */
 int isNumeric(const char * str, const int strLength) {
 	int i;
 	int temp;
@@ -56,7 +51,6 @@ int isNumeric(const char * str, const int strLength) {
 	return 0;
 }
 
-/* Vérifié. */
 void removeHeadAndTailChar(char ** str, char c) {
 	int i;
 	int length = (int) strlen(* str);

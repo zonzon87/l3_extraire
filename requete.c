@@ -7,7 +7,6 @@
 #include "outils.h"
 
 
-/* Vérifié. */
 void copierChamp(const void * valeur, void ** lieu) {
 	champ * ch = (champ *) valeur;
 	(* lieu) = (champ *) malloc(sizeof (champ));
@@ -15,7 +14,6 @@ void copierChamp(const void * valeur, void ** lieu) {
 	((champ *) (* lieu))->row = ch->row;
 }
 
-/* Vérifié. */
 int comparerChamp(const champ * ch1, const champ * ch2) {
 	if (ch1->table > ch2->table) {
 		return 1;
@@ -31,7 +29,6 @@ int comparerChamp(const champ * ch1, const champ * ch2) {
 	return 0;
 }
 
-/* Vérifié. */
 void copierCondition(const void * valeur, void ** lieu) {
 	condition * co = (condition *) valeur;
 	(* lieu) = (condition *) malloc(sizeof (condition));
@@ -41,7 +38,6 @@ void copierCondition(const void * valeur, void ** lieu) {
 	copierChamp((void *) (co->champ2), (void **) &(((condition *) (* lieu))->champ2));
 }
 
-/* Vérifié. */
 void libererCondition(void ** lieu) {
 	if ((* lieu) != NULL) {
 		libererSimple((void **) &(((condition *) (* lieu))->champ1));
@@ -51,7 +47,6 @@ void libererCondition(void ** lieu) {
 	}
 }
 
-/* Vérifié. */
 void newRequete(requete ** req) {
     (* req) = (requete *) malloc(sizeof (requete));
 	file_creer(&((* req)->champsSortie), &copierChamp, &libererSimple);
@@ -62,7 +57,6 @@ void newRequete(requete ** req) {
 	(* req)->tabFChamps = NULL;
 }
 
-/* Vérifié. */
 void destroyRequete(requete ** req) {
 	if ((* req) != NULL) {
 	    int i;
@@ -82,7 +76,6 @@ void destroyRequete(requete ** req) {
 	}
 }
 
-/* Vérifié. */
 int base26to10(int * result, const char * str, const int strLength) {
 	int i;
 	int temp;
@@ -102,7 +95,6 @@ int base26to10(int * result, const char * str, const int strLength) {
 	return 0;
 }
 
-/* Vérifié. */
 int parseSyntaxChamp(champ ** ch, const char separatorChamp, const char * str) {
 	int a;
 	int length;
@@ -169,7 +161,6 @@ int parseSyntaxChamp(champ ** ch, const char separatorChamp, const char * str) {
 	return 0;
 }
 
-/* Vérifié. */
 int parseSyntaxCondition(condition ** co, const char separatorChamp, const char * str) {
 	int a;
 	int length;
@@ -263,7 +254,6 @@ int parseSyntaxCondition(condition ** co, const char separatorChamp, const char 
 	return 0;
 }
 
-/* Vérifié. */
 int initRequete(requete ** req, const int argc, const char * argv[]) {
 	/* rappel: argv[0] = #commande d'appel# */
 	static const char separatorChamp = S_CHAMP;
@@ -448,7 +438,6 @@ int initRequete(requete ** req, const int argc, const char * argv[]) {
 	return returnValue;
 }
 
-/* Vérifié. */
 int searchRowInFile(file f, int row) {
     int i = 1;
     int * value;
@@ -471,7 +460,6 @@ int searchRowInFile(file f, int row) {
     return -1;
 }
 
-/* Vérifié. */
 void completeChamps(file * champs, champ * ch) {
     int result;
 
@@ -484,7 +472,6 @@ void completeChamps(file * champs, champ * ch) {
     }
 }
 
-/* Vérifié */
 void optimizeRequete(const requete * reqInit, requete ** reqOpt) {
 	int i;
 	int nbFichiers;
@@ -553,7 +540,6 @@ void optimizeRequete(const requete * reqInit, requete ** reqOpt) {
     (* reqOpt)->tabFChamps = champs;
 }
 
-/* Vérifié. */
 int createRequete(requete ** req, const int argc, const char * argv[]) {
     requete * reqInit = NULL;
 

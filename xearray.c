@@ -3,7 +3,6 @@
 #include "xearray.h"
 
 
-/* Vérifié. */
 void creerXEArray(xEArray ** xEA, int nbElements, void (* copier)(const void * valeur, void ** lieu), void (* liberer)(void ** lieu)) {
 	int i;
 
@@ -18,7 +17,6 @@ void creerXEArray(xEArray ** xEA, int nbElements, void (* copier)(const void * v
 	(* xEA)->liberer = liberer;
 }
 
-/* Vérifié. */
 void * accesXEArray(xEArray * xEA, int index) {
 	if ((index > -1) && (index < xEA->nbElements)) {
 		return xEA->elements[index];
@@ -27,7 +25,6 @@ void * accesXEArray(xEArray * xEA, int index) {
 	}
 }
 
-/* Vérifié. */
 int ajouterXEArray(xEArray * xEA, int index, const void * valeur) {
 	if ((xEA == NULL) || (xEA->elements == NULL)) {
 		return XEARRAY_NOT_A_EARRAY;
@@ -53,7 +50,6 @@ int ajouterXEArray(xEArray * xEA, int index, const void * valeur) {
 	return 0;
 }
 
-/* Vérifié. */
 void copierXEArray(const void * valeur, void ** lieu) {
 	int i;
 	xEArray * xEAIn = NULL;
@@ -76,7 +72,6 @@ void copierXEArray(const void * valeur, void ** lieu) {
 	(* lieu) = xEAOut;
 }
 
-/* Vérifié. */
 void libererXEArray(void ** lieu) {
 	int i;
 	xEArray * xEA = NULL;

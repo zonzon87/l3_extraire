@@ -6,6 +6,10 @@
 #include "outils.h"
 
 
+void copyTable(const void * valeur, void ** lieu) {
+	/*copierFile*/
+}
+
 void destroyTable(void ** tab) {
 	if ((* tab) != NULL) {
 		file_detruire(&((* ((table **) tab))->lines));
@@ -229,19 +233,17 @@ int createTable(table ** tab, const char * fileName, const file ordreApparitions
 	return returnValue;
 }
 
-int createTables(xEArray * tEA, const file nomsTables, const file * tabFChamps) {
-	/*int i;
-	int nbFichiers;
+int createTables(xEArray ** tEA, const file nomsTables, const file * tabFChamps) {
+	int i;
 	int result;
-	table ** tabx = NULL;
-	char * temp;
+	char * nomFichier;
 	file_parcours parcours = NULL;
 
-	i = 0;
-	nbFichiers = file_taille(nomsTables);
-	newTables((void **) &tabx, nbFichiers);
+	xEArray * tEAT = NULL;
 
-	parcours = file_parcours_creer(nomsTables);
+	creerXEArray(&tEAT, file_taille(nomsTables), &copyTable, &destroyTable);
+
+	/*parcours = file_parcours_creer(nomsTables);
 	while (!file_parcours_est_fini(parcours)) {
 		file_parcours_suivant(parcours, (void **) &temp);
 
@@ -252,8 +254,8 @@ int createTables(xEArray * tEA, const file nomsTables, const file * tabFChamps) 
 		}
 		i++;
 	}
-	file_parcours_detruire(&parcours);
-	*/
+	file_parcours_detruire(&parcours);*/
+
 	return 0;
 }
 

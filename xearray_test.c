@@ -6,7 +6,6 @@
 #include "outils.h"
 
 
-/* Vérifié. */
 int copierXEArray_test() {
 	int returnValue = 0;
 	int i;
