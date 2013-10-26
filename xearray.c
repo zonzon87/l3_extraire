@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#include "earray.h"
+#include "xearray.h"
 
 
 /* Vérifié. */
@@ -29,13 +29,13 @@ void * accesXEArray(xEArray * xEA, int index) {
 
 /* Vérifié. */
 int ajouterXEArray(xEArray * xEA, int index, const void * valeur) {
-	if ((xEA == NULL) || (xEA->elements == NULL)) { /*a vérifier*/
-		return EARRAY_NOT_A_EARRAY;
+	if ((xEA == NULL) || (xEA->elements == NULL)) {
+		return XEARRAY_NOT_A_EARRAY;
 	}
 
 	/* Si l'index est erroné. */
 	if ((index < 0) || (index > (xEA->nbElements - 1))) {
-		return EARRAY_WRONGINDEX;
+		return XEARRAY_WRONGINDEX;
 	}
 
 	/* Si une valeur est déjà présente. */

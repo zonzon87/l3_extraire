@@ -2,7 +2,7 @@
 #include <string.h>
 
 #include "test.h"
-#include "earray.h"
+#include "xearray.h"
 #include "outils.h"
 
 

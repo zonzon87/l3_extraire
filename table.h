@@ -2,19 +2,18 @@
 #define __TABLE_H__
 
 #include "file.h"
-#include "earray.h"
-#include "outils.h"
+#include "xearray.h"
 
 #define TOKENDELIMITOR "|"
 #define TOKENGARBAGE ' '
 #define TABLE_BUFFER 128
 #define LINE_EOF 1
 #define ERROR_MISSINGFILE 1
-#define P_ERROR_MISSINGFILE(x) printf("Fichier inexistant : %s\n", x)
+#define P_ERROR_MISSINGFILE(x) printf("Fichier inexistant : %s", x)
 #define ERROR_INEXISTANTCHAMP 2
-#define P_ERROR_INEXISTANTCHAMP(x, y) printf("Erreur demande d'une colonne inexistante d'un fichier : %s >%d\n", x, y)
+#define P_ERROR_INEXISTANTCHAMP(x, y) printf("Erreur demande d'une colonne inexistante d'un fichier : %s >%d", x, y)
 #define ERROR_MALFORMEDFILE 3
-#define P_ERROR_MALFORMEDFILE(x) printf("Fichier malformé : %s\n", x)
+#define P_ERROR_MALFORMEDFILE(x) printf("Fichier malformé : %s", x)
 
 
 typedef struct table {
@@ -49,7 +48,7 @@ extern int divideCharEToCharEArray(xEArray ** dest, int nbElements, const char *
 
 extern int rearrangeLineRows(xEArray ** cEAOut, xEArray * cEAIn, const file_parcours values, int nbValues);
 
-extern int createTable(table * tab, const char * fileName, const file ordreApparitions);
+extern int createTable(table ** tab, const char * fileName, const file ordreApparitions);
 
 extern int createTables(xEArray * tEA, const file nomsTables, const file * tabFChamps);
 

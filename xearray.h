@@ -1,9 +1,9 @@
-#ifndef __EARRAY_H__
-#define __EARRAY_H__
+#ifndef __XEARRAY_H__
+#define __XEARRAY_H__
 
 
-#define EARRAY_WRONGINDEX 1
-#define EARRAY_NOT_A_EARRAY -1
+#define XEARRAY_WRONGINDEX 1
+#define XEARRAY_NOT_A_EARRAY -1
 
 
 typedef struct xEArray {

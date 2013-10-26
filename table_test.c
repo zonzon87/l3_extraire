@@ -4,11 +4,12 @@
 
 #include "test.h"
 #include "table.h"
-#include "outils.h"
 #include "requete.h"
+#include "outils.h"
+
+#define TABLETOPRINT 0 /* 0 désactivé / 1 activé */
 
 
-/* Vérifié. */
 int getLine_test(char * fileName) {
 	int lastLine = 0;
 	FILE * fichier = NULL;
@@ -18,7 +19,6 @@ int getLine_test(char * fileName) {
 
 	if (fichier != NULL)
 	{
-		printf("%s:\n", fileName);
 		printf("### BOF ###\n");
 		while (lastLine != LINE_EOF) {
 			lastLine = getLine(&ch, fichier);
@@ -39,7 +39,7 @@ int getLine_test(char * fileName) {
 
 int countNumberOfChamps_test() {
 	int returnValue = 0;
-	int result = 0;
+	int result;
 	const char * delimitor = TOKENDELIMITOR;
 	char stack1[] = "   alice  |  poisson  |     yourt  | ";
 	char stack2[] = "   alice  |  poisson  |     yourt  |";
@@ -83,11 +83,9 @@ int countNumberOfChamps_test() {
 	return returnValue;
 }
 
-/* Vérifié. */
-/* Doit afficher "alice|poisson|yourt|\n". */
 int divideCharEToCharEArray_test() {
 	int returnValue = 0;
-	int result = 0;
+	int result;
 	const char * delimitor = TOKENDELIMITOR;
 	char stack[] = "   alice  |  poisson  |     yourt  | ";
 
@@ -136,7 +134,7 @@ int rearrangeLineRows_test() {
 	xEArray * cEAOut = NULL;
 
 	const char * cIn[] = {"./extraire", "a.1", "b.3", "a.2", "b.1", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "a.1=b.1"};
-	const char * cOut = {"10"};
+	const char * cOut = "10";
 
 	createRequete(&req, atoi(cOut), cIn);
 	copierCharE((void *) stack, (void **) &str);
@@ -159,29 +157,49 @@ int rearrangeLineRows_test() {
 	return returnValue;
 }
 
+int createTable_test() {
+	int returnValue = 0;
+	int result;
+	requete * req = NULL;
+	table * tab = NULL;
+	
+	const char * c1In[] = {"./extraire", "b.3", "b.3", "b.5", "b.1", "de", "Donnees/r1-1.table", "Donnees/r2-2.table", "avec", "a.1=b.2"};
+	const char * c1Out = "10";
+	
+	PRINT_T(1);
+	createRequete(&req, atoi(c1Out), c1In);
+	result = createTable(&tab, "Donnees/r2-2.table", req->tabFChamps[1]);
+	if (result != 0) {
+		PRINT_T_ERROR();
+		returnValue = 1;
+	} else {
+		if (TABLETOPRINT) {
+			tableToPrint(tab);
+		}
+		PRINT_T_OK();
+	}
+	destroyTable((void **) &tab);
+	destroyRequete(&req);
+
+	return returnValue;
+}
+
 /*void createTables_test() {
     int i;
     requete * req;
     table ** tables = NULL;
 
-	const char * c1In[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "a.1=b.1"};
-	const char * c1Out = {"10"};
+	const char * cIn[] = {"./extraire", "a.1", "b.1", "a.2", "b.3", "de", "Donnees/sport.table", "Donnees/repas.table", "avec", "a.1=b.1"};
+	const char * cOut = {"10"};
 
-	const char ** cIn[1];
-	const char * cOut[1];
-	cIn[0] = c1In;
-	cOut[0] = c1Out;
+	createRequete(&req, atoi(cOut[i]), cIn[i]);
 
-	for (i = 0; i < 1; i++) {
-		createRequete(&req, atoi(cOut[i]), cIn[i]);
-		createTables((void **) tables, req->nomsTables, req->tabFChamps);
-		destroyTables((void **) tables, file_taille(req->nomsTables));
-		destroyRequete(&req);
-	}
+	destroyRequete(&req);
+
 }*/
 
 int main(void) {
-	printf("getLine_test() : \n");
+	printf("getLine_test(\"Donnees/repas.table\") : \n");
 	if (getLine_test("Donnees/repas.table") == 0) {
 		printf("Fichier lu, vérifier les données manuellement !\n");
 	}
@@ -197,6 +215,14 @@ int main(void) {
 	printf("rearrangeLineRows_test() : \n");
 	if (rearrangeLineRows_test() == 0) {
 		printf("Ligne arrangée, vérifier les données manuellement !\n");
+	}
+	printf("createTable_test() : \n");
+	if (createTable_test() == 0) {
+		if (TABLETOPRINT) {
+			printf("Table créée et organisée, vérifier les données manuellement !\n");
+		} else {
+			printf("#define TABLETOPRINT 0 -> table non-affichée.\n");
+		}
 	}
 	/*printf("createTables_test() : Memory only\n");
     createTables_test();*/

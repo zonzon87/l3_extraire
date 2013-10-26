@@ -1,5 +1,5 @@
 # Les modules
-MODULE := file earray requete table outils
+MODULE := file xearray requete table outils
 # Fichiers en-tête
 HEADERS := $(MODULE:%=%.h)
 
@@ -12,7 +12,7 @@ LFLAGS := -lm
 # Options de valgrind
 VFLAGS := --leak-check=full --show-reachable=yes --track-origins=yes
 
-.PHONY : all compilation test memoire alltest file_test earray_test outils_test requete_test table_test archive clean
+.PHONY : all compilation test memoire alltest file_test xearray_test outils_test requete_test table_test archive clean cleanexec
 
 # Construction par défaut :
 all :
@@ -22,12 +22,13 @@ all :
 	@echo "memoire => test les fuites mémoire (il ne doit pas y en avoir)"
 	@echo "alltest => lance tout les tests de module existants"
 	@echo "file_test => petit test du module file avec un test mémoire"
-	@echo "earray_test => test sur le module earray, avec valgrind"
+	@echo "xearray_test => test sur le module earray, avec valgrind"
 	@echo "outils_test => test sur le module outils, avec valgrind"
 	@echo "requete_test => test sur le module requete, avec valgrind"
 	@echo "table_test => test sur le module requete, avec valgrind"
 	@echo "archive => produit la fichier pour le rendu"
-	@echo "clean => nettoie le répertoire"
+	@echo "clean => nettoie le répertoire *.o"
+	@echo "clean => nettoie le répertoire des exécutables"
 
 
 # Compilation
@@ -70,7 +71,7 @@ memoire : extraire
 #	@valgrind $(VFLAGS) ./extraire $(TEST_REQUETE_2) >/dev/null
 
 # Lance tout les tests de module existants
-alltest : file_test earray_test outils_test requete_test table_test
+alltest : file_test xearray_test outils_test requete_test table_test
 
 # TEST du module FILE avec un TEST MÉMOIRE
 file_test : file.o file_test.c
@@ -80,7 +81,7 @@ file_test : file.o file_test.c
 	@if ! diff $(RESULTATS_DIR)/file_test.output $(RESULTATS_ATTENDUS_DIR)/file_test.output ; then echo "*** RÉSUTALT INCORRECT ***" ; false ; else echo OK ; fi
 
 # TEST du module EARRAY avec un TEST MÉMOIRE
-earray_test : earray.o outils.o earray_test.c
+xearray_test : xearray.o outils.o xearray_test.c
 	@$(CC) $(CFLAGS) -o $@ $^
 	@valgrind $(VFLAGS) ./$@
 
@@ -95,7 +96,7 @@ requete_test : requete.o file.o outils.o requete_test.c
 	@valgrind $(VFLAGS) ./$@
 
 # TEST du module TABLE avec un TEST MÉMOIRE
-table_test : table.o file.o earray.o outils.o requete.o table_test.c
+table_test : table.o file.o xearray.o outils.o requete.o table_test.c
 	@$(CC) $(CFLAGS) $(LFLAGS) -o $@ $^
 	@valgrind $(VFLAGS) ./$@
 
@@ -105,3 +106,6 @@ archive :
 
 clean :
 	rm -v *.o
+
+cleanexec :
+	rm -v extraire file_test outils_test requete_test table_test xearray_test
