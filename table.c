@@ -6,11 +6,6 @@
 #include "outils.h"
 
 
-/* Utilisé pour le cas où la ligne termine par |TOKENGARBAGE */
-int nbTokenAtFirstLine;
-
-
-/* Vérifié. */
 void destroyTable(void ** tab) {
 	if ((* tab) != NULL) {
 		file_detruire(&((* ((table **) tab))->lines));
@@ -18,25 +13,11 @@ void destroyTable(void ** tab) {
 	}
 }
 
-void newTables(void ** tabs, int nbTables) {
-	table ** ts = NULL;
-	ts = (table **) malloc((sizeof (table *)) * nbTables);
-	(* tabs) = ts;
+void destroyTables(xEArray ** tEA) {
+	libererXEArray((void **) tEA);
 }
 
-void destroyTables(void ** tabs, int nbTables) {
-	table ** ts = (table **) (* tabs);
-	if(ts != NULL) {
-		int i;
 
-		for (i = 0; i < nbTables; i++){
-			destroyTable((void **) &(ts[i]));
-		}
-		libererSimple((void **) ts);
-	}
-}
-
-/* Vérifié. */
 int getLine(char ** line, FILE * fichier) {
 	int bufferLength = 0;
 	int bufferCount = 0;
@@ -73,7 +54,7 @@ int getLine(char ** line, FILE * fichier) {
 }
 
 /* Testé. */
-int countNumberOfChamps(char * str, const char * delimitor) {
+int countNumberOfChamps(char * str, const char * delimitor, int * nbTokenAtFirstLine) {
 	int i = 0;
 	char * test = NULL;
 	char * token = NULL;
@@ -86,7 +67,7 @@ int countNumberOfChamps(char * str, const char * delimitor) {
 		token = strtok(NULL, delimitor);
 	}
 
-	nbTokenAtFirstLine = i;
+	* nbTokenAtFirstLine = i;
 
 	/* À cause : du cas où la ligne termine par |TOKENGARBAGE */
 	removeHeadAndTailChar(&test, TOKENGARBAGE);
@@ -99,7 +80,7 @@ int countNumberOfChamps(char * str, const char * delimitor) {
 }
 
 /* Testé. */
-int divideCharEToCharEArray(xEArray ** dest, int nbElements, const char * delimitor, char * src) {
+int divideCharEToCharEArray(xEArray ** dest, int nbElements, int nbTokenAtFirstLine, const char * delimitor, char * src) {
 	int i = 0;
 	int maxI = 0;
 	char * temp = NULL;
@@ -170,6 +151,7 @@ int createTable(table ** tab, const char * fileName, const file ordreApparitions
 
 	if (fichier != NULL) {
 		int nbChamps;
+		int nbTokenAtFirstLine;
 		int result;
 		int lastLine = 0;
 		char * line = NULL;
@@ -184,7 +166,7 @@ int createTable(table ** tab, const char * fileName, const file ordreApparitions
 		if (file_taille(ordreApparitions) > 0) {
 			/* TC */
 			lastLine = getLine(&line, fichier);
-			nbChamps = countNumberOfChamps(line, TOKENDELIMITOR);
+			nbChamps = countNumberOfChamps(line, TOKENDELIMITOR, &nbTokenAtFirstLine);
 			libererSimple((void **) &line);
 			tabT->nbRows = nbChamps;
 
@@ -193,7 +175,7 @@ int createTable(table ** tab, const char * fileName, const file ordreApparitions
 			while (lastLine != LINE_EOF) {
 				lastLine = getLine(&line, fichier);
 				if (line[0] != '\0') { /* Si line est non-vide. */
-					result = divideCharEToCharEArray(&cEAIn, nbChamps, TOKENDELIMITOR, line);
+					result = divideCharEToCharEArray(&cEAIn, nbChamps, nbTokenAtFirstLine, TOKENDELIMITOR, line);
 					libererSimple((void **) &line);
 
 					if (result != 0) {

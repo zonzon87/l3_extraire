@@ -40,6 +40,7 @@ int getLine_test(char * fileName) {
 int countNumberOfChamps_test() {
 	int returnValue = 0;
 	int result;
+	int useless;
 	const char * delimitor = TOKENDELIMITOR;
 	char stack1[] = "   alice  |  poisson  |     yourt  | ";
 	char stack2[] = "   alice  |  poisson  |     yourt  |";
@@ -49,7 +50,7 @@ int countNumberOfChamps_test() {
 
 	PRINT_T(1);
 	copierCharE((void *) stack1, (void **) &str);
-	result = countNumberOfChamps(str, delimitor);
+	result = countNumberOfChamps(str, delimitor, &useless);
 	if (result != 3) {
 		PRINT_T_ERROR();
 		returnValue = 1;
@@ -60,7 +61,7 @@ int countNumberOfChamps_test() {
 
 	PRINT_T(2);
 	copierCharE((void *) stack2, (void **) &str);
-	result = countNumberOfChamps(str, delimitor);
+	result = countNumberOfChamps(str, delimitor, &useless);
 	if (result != 3) {
 		PRINT_T_ERROR();
 		returnValue = 1;
@@ -71,7 +72,7 @@ int countNumberOfChamps_test() {
 
 	PRINT_T(3);
 	copierCharE((void *) stack3, (void **) &str);
-	result = countNumberOfChamps(str, delimitor);
+	result = countNumberOfChamps(str, delimitor, &useless);
 	if (result != 3) {
 		PRINT_T_ERROR();
 		returnValue = 1;
@@ -94,7 +95,7 @@ int divideCharEToCharEArray_test() {
 
 	PRINT_T(1);
 	copierCharE((void *) stack, (void **) &str);
-	result = divideCharEToCharEArray(&cEA, 3, delimitor, str);
+	result = divideCharEToCharEArray(&cEA, 3, 4, delimitor, str);
 	if (result != 0) {
 		PRINT_T_ERROR();
 		returnValue = 1;
@@ -110,7 +111,7 @@ int divideCharEToCharEArray_test() {
 
 	PRINT_T(2);
 	copierCharE((void *) stack, (void **) &str);
-	result = divideCharEToCharEArray(&cEA, 2, delimitor, str);
+	result = divideCharEToCharEArray(&cEA, 2, 4, delimitor, str);
 	if (result != ERROR_MALFORMEDFILE) {
 		PRINT_T_ERROR();
 		returnValue = 1;
@@ -138,9 +139,8 @@ int rearrangeLineRows_test() {
 
 	createRequete(&req, atoi(cOut), cIn);
 	copierCharE((void *) stack, (void **) &str);
-	divideCharEToCharEArray(&cEAIn, 3, delimitor, str);
+	divideCharEToCharEArray(&cEAIn, 3, 3, delimitor, str);
 	values = file_parcours_creer(req->tabFChamps[1]);
-
 
 	rearrangeLineRows(&cEAOut, cEAIn, values, file_taille(req->tabFChamps[1]));
 	printf("cEAIn  :\t");
