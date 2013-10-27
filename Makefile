@@ -62,13 +62,13 @@ test : extraire
 	@mkdir -p $(RESULTATS_DIR)
 	@./extraire $(TEST_REQUETE_1) 1> $(RESULTATS_DIR)/requete_1.table
 	@if ! diff $(RESULTATS_DIR)/requete_1.table $(RESULTATS_ATTENDUS_DIR)/requete_1.table ; then echo "*** RÉSUTALT INCORRECT ***" ; false ; else echo "Test 1 OK !" ; fi
-#	@./extraire $(TEST_REQUETE_2) 1> $(RESULTATS_DIR)/requete_2.table
-#	@if ! diff $(RESULTATS_DIR)/requete_2.table $(RESULTATS_ATTENDUS_DIR)/requete_2.table ; then echo "*** RÉSUTALT INCORRECT ***" ; false ; else echo "Test 2 OK !" ; fi
+	@./extraire $(TEST_REQUETE_2) 1> $(RESULTATS_DIR)/requete_2.table
+	@if ! diff $(RESULTATS_DIR)/requete_2.table $(RESULTATS_ATTENDUS_DIR)/requete_2.table ; then echo "*** RÉSUTALT INCORRECT ***" ; false ; else echo "Test 2 OK !" ; fi
 
 # TEST de GESTION de la MÉMOIRE
 memoire : extraire
 	@valgrind $(VFLAGS) ./extraire $(TEST_REQUETE_1) >/dev/null
-#	@valgrind $(VFLAGS) ./extraire $(TEST_REQUETE_2) >/dev/null
+	@valgrind $(VFLAGS) ./extraire $(TEST_REQUETE_2) >/dev/null
 
 # Lance tout les tests de module existants
 alltest : file_test xearray_test outils_test requete_test table_test

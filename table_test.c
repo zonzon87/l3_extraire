@@ -77,7 +77,7 @@ int divideCharEToCharEArray_test() {
 		printf("In  :\t");
 		printf("\"%s\"\n", stack);
 		printf("Out :\t");
-		charEArrayToPrint(cEA);
+		tableLineToPrint(cEA);
 	}
 	libererXEArray((void **) &cEA);
 	libererSimple((void **) &str);
@@ -117,9 +117,9 @@ int rearrangeLineRows_test() {
 
 	rearrangeLineRows(&cEAOut, cEAIn, values, file_taille(req->ordreApparitions[1]));
 	printf("cEAIn  :\t");
-	charEArrayToPrint(cEAIn);
+	tableLineToPrint(cEAIn);
 	printf("cEAOut :\t");
-	charEArrayToPrint(cEAOut);
+	tableLineToPrint(cEAOut);
 	libererXEArray((void **) &cEAOut);
 
 	file_parcours_detruire(&values);
@@ -135,10 +135,10 @@ int createTable_test() {
 	int result;
 	requete * req = NULL;
 	table * tab = NULL;
-	
+
 	const char * c1In[] = {"./extraire", "b.3", "b.3", "b.5", "b.1", "de", "Donnees/r1-1.table", "Donnees/r2-2.table", "avec", "a.1=b.2"};
 	const char * c1Out = "10";
-	
+
 	PRINT_T(1);
 	createRequete(&req, atoi(c1Out), c1In);
 	result = createTable(&tab, "Donnees/r2-2.table", req->ordreApparitions[1]);

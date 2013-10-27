@@ -204,7 +204,7 @@ int createTables(tables ** tEA, const file nomsFichiers, const file * ordreAppar
 			file_parcours_detruire(&parcours);
 			return result;
 		} else {
-			lienXEArray(tEAT, i, (void *) tab);
+			ajouterLienXEArray(tEAT, i, (void *) tab);
 			tab = NULL;
 		}
 		i++;
@@ -215,7 +215,7 @@ int createTables(tables ** tEA, const file nomsFichiers, const file * ordreAppar
 	return 0;
 }
 
-void charEArrayToPrint(tableLine * cEA) {
+void tableLineToPrint(tableLine * cEA) {
 	int i;
 
 	for (i = 0; i < cEA->nbElements; i++) {
@@ -230,7 +230,7 @@ void tableToPrint(table * tab) {
 
 	while (!file_parcours_est_fini(parcours)) {
 		file_parcours_suivant(parcours, (void **) &cEA);
-		charEArrayToPrint(cEA);
+		tableLineToPrint(cEA);
 		libererXEArray((void **) &cEA);
 	}
 	file_parcours_detruire(&parcours);

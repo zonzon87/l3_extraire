@@ -50,7 +50,7 @@ int ajouterXEArray(xEArray * xEA, int index, const void * valeur) {
 	return 0;
 }
 
-int lienXEArray(xEArray * xEA, int index, void * valeur) {
+int ajouterLienXEArray(xEArray * xEA, int index, void * valeur) {
 	if ((xEA == NULL) || (xEA->elements == NULL)) {
 		return XEARRAY_NOT_A_EARRAY;
 	}
@@ -60,11 +60,6 @@ int lienXEArray(xEArray * xEA, int index, void * valeur) {
 		return XEARRAY_WRONGINDEX;
 	}
 
-	/* Si une valeur est déjà présente. */
-	if (xEA->elements[index] != NULL) {
-		/* On libère l'ancienne valeur. */
-		(* (xEA->liberer))((void **) &(xEA->elements[index]));
-	}
 	if (valeur != NULL) {
 		/* On lie la nouvelle valeur. */
 		xEA->elements[index] = valeur;
@@ -81,7 +76,7 @@ void copierXEArray(const void * valeur, void ** lieu) {
 	xEArray * xEAIn = NULL;
 	xEArray * xEAOut = NULL;
 
-	
+
 	xEAIn = (xEArray *) valeur;
 	if (xEAIn != NULL) {
 		if (xEAIn->elements != NULL) {
@@ -108,6 +103,20 @@ void libererXEArray(void ** lieu) {
 			for (i = 0; i < xEA->nbElements; i++) {
 				(* (xEA->liberer))((void **) &(xEA->elements[i]));
 			}
+			free(xEA->elements);
+			xEA->elements = NULL;
+		}
+		free(xEA);
+		(* lieu) = NULL;
+	}
+}
+
+void libererLienXEArray(void ** lieu) {
+	xEArray * xEA = NULL;
+
+	xEA = (xEArray *) (* lieu);
+	if (xEA != NULL) {
+		if (xEA->elements != NULL) {
 			free(xEA->elements);
 			xEA->elements = NULL;
 		}

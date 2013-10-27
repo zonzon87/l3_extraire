@@ -20,11 +20,12 @@ extern void * accesXEArray(xEArray * xEA, int index);
 
 extern int ajouterXEArray(xEArray * xEA, int index, const void * valeur);
 
-extern int lienXEArray(xEArray * xEA, int index, void * valeur);
+extern int ajouterLienXEArray(xEArray * xEA, int index, void * valeur);
 
 extern void copierXEArray(const void * valeur, void ** lieu);
 
 extern void libererXEArray(void ** lieu);
 
+extern void libererLienXEArray(void ** lieu);
 
 #endif

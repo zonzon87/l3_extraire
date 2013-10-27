@@ -34,7 +34,7 @@ extern int createTable(table ** tab, const char * fileName, const file ordreAppa
 
 extern int createTables(tables ** tEA, const file nomsTables, const file * ordreApparitions);
 
-extern void charEArrayToPrint(tableLine * cEA);
+extern void tableLineToPrint(tableLine * cEA);
 
 extern void tableToPrint(table * tab);
 
