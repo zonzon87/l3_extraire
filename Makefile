@@ -1,3 +1,11 @@
+###############################################################################
+#                                                                             #
+#   Copyright © 2013: Jérôme Durand-Lose, Alexis Lavie, Hugo Thibaud.         #
+#                                                                             #
+#   This file is licensed under the GPLv3: General Public License v3.         #
+#                                                                             #
+###############################################################################
+
 # Les modules
 MODULE := file xearray requete table outils
 # Fichiers en-tête

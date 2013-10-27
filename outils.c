@@ -1,3 +1,11 @@
+/*****************************************************************************
+ *                                                                           *
+ *   Copyright © 2013, Alexis Lavie, Hugo Thibaud.                           *
+ *                                                                           *
+ *   This file is licensed under the GPLv3: General Public License v3.       *
+ *                                                                           *
+ *****************************************************************************/
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
@@ -42,7 +50,6 @@ int getLine(char ** line, FILE * fichier) {
 		c = getc(fichier);
 		if (c != '\n') {
 			fseek(fichier, -1, SEEK_CUR);
-			c = '\r';
 		}
 	}
 	buffer[length - 1] = '\0';

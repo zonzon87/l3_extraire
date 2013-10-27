@@ -1,3 +1,11 @@
+/*****************************************************************************
+ *                                                                           *
+ *   Copyright © 2013: Alexis Lavie, Hugo Thibaud.                           *
+ *                                                                           *
+ *   This file is licensed under the GPLv3: General Public License v3.       *
+ *                                                                           *
+ *****************************************************************************/
+
 #ifndef __XEARRAY_H__
 #define __XEARRAY_H__
 
